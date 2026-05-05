@@ -3,28 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>❄️ Zocial — социальная сеть</title>
+    <title>❄️ Zocial</title>
     <style>
         :root {
-            --primary: #2563eb; --primary-light: #60a5fa; --primary-dark: #1d4ed8;
-            --accent: #f97316; --bg: #0a0a1a; --surface: #1a1a2e; --surface2: #16213e;
-            --text: #ffffff; --text-secondary: #94a3b8;
-            --border: rgba(37, 99, 235, 0.15); --radius: 20px; --radius-sm: 14px;
-            --safe-bottom: env(safe-area-inset-bottom, 16px);
-            --gold: #f59e0b; --green: #10b981;
+            --primary: #2563eb; --primary-light: #60a5fa; --bg: #0a0a1a; --surface: #1a1a2e;
+            --surface2: #16213e; --text: #ffffff; --text-secondary: #94a3b8;
+            --border: rgba(37,99,235,0.15); --radius: 20px; --accent: #f97316;
+            --gold: #f59e0b; --green: #10b981; --safe-bottom: env(safe-area-inset-bottom,16px);
         }
         .theme-light {
-            --bg: #f1f5f9; --surface: #ffffff; --surface2: #e2e8f0; --text: #1e293b;
-            --text-secondary: #64748b; --border: rgba(37, 99, 235, 0.2);
+            --bg: #f1f5f9; --surface: #ffffff; --surface2: #e2e8f0;
+            --text: #1e293b; --text-secondary: #64748b; --border: rgba(37,99,235,0.2);
         }
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text);
-            display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden;
-            transition: background 0.5s, color 0.5s;
-        }
+        body { font-family:'Segoe UI',sans-serif; background:var(--bg); color:var(--text); display:flex; justify-content:center; align-items:center; min-height:100vh; overflow:hidden; transition:0.5s; }
         .app { width:100%; max-width:430px; height:100vh; height:100dvh; display:flex; flex-direction:column; background:var(--bg); position:relative; overflow:hidden; }
-
         .login-screen { position:fixed; inset:0; background:var(--bg); z-index:500; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; max-width:430px; margin:0 auto; }
         .login-screen.hidden { display:none; }
         .login-logo { font-size:3rem; font-weight:800; color:var(--primary-light); margin-bottom:24px; }
@@ -35,110 +28,93 @@
         .login-tab.active { color:white; }
         .login-form { width:100%; display:flex; flex-direction:column; gap:14px; }
         .login-form.hidden { display:none; }
-        .login-input { width:100%; padding:16px 20px; border-radius:25px; border:2px solid var(--border); background:var(--surface); color:var(--text); font-size:1rem; outline:none; }
+        .login-input { width:100%; padding:14px 18px; border-radius:25px; border:2px solid var(--border); background:var(--surface); color:var(--text); font-size:1rem; outline:none; }
         .login-input:focus { border-color:var(--primary); }
         .login-error { color:var(--accent); font-size:0.85rem; text-align:center; min-height:20px; }
         .login-btn { width:100%; padding:16px; border-radius:25px; border:none; background:var(--primary); color:white; font-size:1.1rem; font-weight:700; cursor:pointer; }
-
         .main-app { display:none; width:100%; height:100%; flex-direction:column; }
         .main-app.visible { display:flex; }
         .header { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; background:var(--surface); border-bottom:1px solid var(--border); z-index:100; }
         .logo { font-size:1.6rem; font-weight:800; color:var(--primary-light); }
         .icon-btn { width:38px; height:38px; border-radius:50%; background:var(--surface2); border:1px solid var(--border); color:var(--primary-light); font-size:1.2rem; display:flex; align-items:center; justify-content:center; cursor:pointer; }
-
-        .main-content { flex:1; overflow-y:auto; position:relative; }
+        .main-content { flex:1; overflow-y:auto; }
         .main-content::-webkit-scrollbar { width:0; }
         .section { display:none; padding:16px; animation:fadeIn 0.3s; }
         .section.active { display:block; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
-
         .post-card { background:var(--surface); border-radius:var(--radius); padding:16px; margin-bottom:14px; border:1px solid var(--border); animation:postAppear 0.4s ease; }
         @keyframes postAppear { from{opacity:0;transform:scale(0.8) translateY(20px);} to{opacity:1;transform:scale(1) translateY(0);} }
         .post-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
-        .post-avatar { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,var(--primary-dark),var(--primary-light)); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1rem; flex-shrink:0; overflow:hidden; cursor:pointer; }
-        .post-user-info { flex:1; cursor:pointer; }
-        .post-username { font-weight:600; font-size:0.95rem; color:var(--primary-light); }
+        .post-avatar { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--primary-light)); display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0; cursor:pointer; }
+        .post-username { font-weight:600; color:var(--primary-light); cursor:pointer; }
         .post-time { font-size:0.7rem; color:var(--text-secondary); }
-        .post-text { font-size:0.9rem; line-height:1.5; margin-bottom:12px; }
+        .post-text { margin-bottom:12px; line-height:1.5; }
         .post-actions { display:flex; gap:20px; padding-top:8px; border-top:1px solid var(--border); }
-        .post-action { display:flex; align-items:center; gap:6px; font-size:0.85rem; color:var(--primary-light); cursor:pointer; background:none; border:none; padding:6px 10px; border-radius:20px; }
+        .post-action { display:flex; align-items:center; gap:6px; color:var(--primary-light); cursor:pointer; background:none; border:none; padding:6px 10px; border-radius:20px; font-size:0.85rem; }
         .post-action.liked { color:var(--accent); }
-
         .like-animation { position:fixed; pointer-events:none; z-index:999; font-size:2rem; animation:likeFloat 0.8s ease-out forwards; }
         @keyframes likeFloat { 0%{opacity:1;transform:translateY(0) scale(1);} 50%{opacity:1;transform:translateY(-40px) scale(1.3);} 100%{opacity:0;transform:translateY(-80px) scale(0.8);} }
-
         .profile-header { display:flex; align-items:center; gap:20px; padding:20px 0; }
-        .profile-avatar { width:100px; height:100px; border-radius:50%; background:linear-gradient(135deg,var(--primary-dark),var(--primary-light)); display:flex; align-items:center; justify-content:center; font-size:2.8rem; font-weight:700; flex-shrink:0; overflow:hidden; }
+        .profile-avatar { width:100px; height:100px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--primary-light)); display:flex; align-items:center; justify-content:center; font-size:2.8rem; font-weight:700; flex-shrink:0; }
         .profile-info { flex:1; }
         .profile-name { font-size:1.5rem; font-weight:700; }
-        .profile-username { color:var(--primary-light); font-size:0.95rem; }
+        .profile-username { color:var(--primary-light); }
         .profile-stats { display:flex; justify-content:space-around; margin:20px 0; }
-        .stat-item { text-align:center; }
+        .stat-item { text-align:center; cursor:pointer; }
         .stat-number { font-size:1.4rem; font-weight:700; color:var(--primary-light); }
         .stat-label { font-size:0.7rem; color:var(--text-secondary); }
-        .btn { padding:10px 24px; border-radius:25px; border:none; font-weight:600; cursor:pointer; font-size:0.9rem; transition:0.2s; }
+        .btn { padding:10px 24px; border-radius:25px; border:none; font-weight:600; cursor:pointer; font-size:0.9rem; }
         .btn-primary { background:var(--primary); color:white; }
         .btn-outline { background:transparent; border:2px solid var(--primary); color:var(--primary-light); }
         .btn:active { transform:scale(0.95); }
-
-        .chat-list-item { display:flex; align-items:center; gap:12px; padding:14px; background:var(--surface); border-radius:var(--radius-sm); margin-bottom:8px; cursor:pointer; border:1px solid var(--border); }
-        .chat-avatar-sm { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--primary-dark),var(--primary-light)); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; flex-shrink:0; overflow:hidden; }
+        .chat-list-item { display:flex; align-items:center; gap:12px; padding:14px; background:var(--surface); border-radius:14px; margin-bottom:8px; cursor:pointer; border:1px solid var(--border); }
+        .chat-avatar-sm { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--primary-light)); display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0; }
         .chat-list-name { font-weight:600; }
-        .chat-list-preview { font-size:0.8rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .add-contact-btn { width:100%; padding:14px; background:var(--surface); border:2px dashed var(--primary); border-radius:var(--radius-sm); color:var(--primary-light); font-size:0.9rem; cursor:pointer; margin-bottom:12px; }
-
-        .chat-screen { position:fixed; inset:0; background:var(--bg); z-index:200; display:flex; flex-direction:column; transform:translateX(100%); transition:transform 0.3s; max-width:430px; margin:0 auto; }
+        .chat-list-preview { font-size:0.8rem; color:var(--text-secondary); }
+        .add-contact-btn { width:100%; padding:14px; background:var(--surface); border:2px dashed var(--primary); border-radius:14px; color:var(--primary-light); cursor:pointer; margin-bottom:12px; }
+        .chat-screen { position:fixed; inset:0; background:var(--bg); z-index:200; display:flex; flex-direction:column; transform:translateX(100%); transition:0.3s; max-width:430px; margin:0 auto; }
         .chat-screen.open { transform:translateX(0); }
-        .chat-nav { display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--surface); border-bottom:1px solid var(--border); }
+        .chat-nav { display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--surface); }
         .back-btn { background:none; border:none; color:var(--primary-light); font-size:1.4rem; cursor:pointer; }
         .chat-messages { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; }
-        .msg-bubble { max-width:80%; padding:12px 16px; border-radius:20px; font-size:0.9rem; word-break:break-word; }
+        .msg-bubble { max-width:80%; padding:12px 16px; border-radius:20px; font-size:0.9rem; }
         .msg-bubble.incoming { background:var(--surface2); align-self:flex-start; border-bottom-left-radius:6px; }
         .msg-bubble.outgoing { background:var(--primary); color:white; align-self:flex-end; border-bottom-right-radius:6px; }
         .chat-input-bar { display:flex; gap:8px; padding:12px 16px; padding-bottom:calc(12px + var(--safe-bottom)); background:var(--surface); }
-        .chat-input { flex:1; background:var(--surface2); border:1px solid var(--border); padding:12px 18px; border-radius:25px; color:var(--text); font-size:0.9rem; outline:none; }
+        .chat-input { flex:1; background:var(--surface2); border:1px solid var(--border); padding:12px 18px; border-radius:25px; color:var(--text); outline:none; }
         .send-btn { width:44px; height:44px; border-radius:50%; background:var(--primary); border:none; color:white; font-size:1.2rem; cursor:pointer; }
-
         .bottom-nav { display:flex; background:var(--surface); border-top:1px solid var(--border); padding:8px 10px; padding-bottom:calc(8px + var(--safe-bottom)); }
-        .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 4px; border-radius:16px; cursor:pointer; background:none; border:none; color:var(--primary-light); font-size:0.7rem; font-weight:500; }
+        .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; background:none; border:none; color:var(--primary-light); font-size:0.7rem; }
         .nav-item .nav-icon { font-size:1.5rem; }
-        .nav-item.active { color:var(--primary); background:var(--surface2); }
-
-        .fab { position:fixed; bottom:100px; right:20px; width:56px; height:56px; border-radius:50%; background:var(--primary); color:white; font-size:2rem; border:none; box-shadow:0 8px 24px rgba(37,99,235,0.6); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:150; animation:fabPulse 2s infinite; }
+        .nav-item.active { color:var(--primary); }
+        .fab { position:fixed; bottom:100px; right:20px; width:56px; height:56px; border-radius:50%; background:var(--primary); color:white; font-size:2rem; border:none; box-shadow:0 8px 24px rgba(37,99,235,0.6); cursor:pointer; z-index:150; animation:fabPulse 2s infinite; }
         @keyframes fabPulse { 0%,100%{box-shadow:0 8px 24px rgba(37,99,235,0.6);} 50%{box-shadow:0 8px 32px rgba(37,99,235,0.9);} }
         .fab.hidden { display:none; }
-
         .bank-balance-card { background:linear-gradient(135deg,#1e3a5f,#162d4a); border-radius:var(--radius); padding:24px; text-align:center; margin:16px 0; border:2px solid #3b82f6; }
-        .bank-balance-amount { font-size:3rem; font-weight:800; color:var(--gold); margin:8px 0; }
-        .bank-clicker-area { background:radial-gradient(circle,#2563eb,#1d4ed8); border-radius:50%; width:140px; height:140px; margin:16px auto; display:flex; align-items:center; justify-content:center; flex-direction:column; border:3px solid #3b82f6; cursor:pointer; }
-        .bank-clicker-area:active { transform:scale(0.9); }
-        .bank-clicker-coin { font-size:3rem; }
+        .bank-amount { font-size:3rem; font-weight:800; color:var(--gold); }
+        .bank-clicker { background:radial-gradient(circle,#2563eb,#1d4ed8); border-radius:50%; width:140px; height:140px; margin:16px auto; display:flex; align-items:center; justify-content:center; flex-direction:column; border:3px solid #3b82f6; cursor:pointer; }
+        .bank-clicker:active { transform:scale(0.9); }
         .float-text { position:fixed; pointer-events:none; z-index:999; font-weight:700; color:var(--gold); animation:floatUp 1s ease-out forwards; }
         @keyframes floatUp { 0%{opacity:1;transform:translateY(0);} 100%{opacity:0;transform:translateY(-60px);} }
-
-        .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:300; display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+        .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:300; display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:0.3s; }
         .modal-overlay.open { opacity:1; pointer-events:all; }
-        .modal-sheet { background:var(--surface); width:100%; max-width:430px; border-radius:24px 24px 0 0; padding:20px; padding-bottom:calc(20px + var(--safe-bottom)); transform:translateY(100%); transition:transform 0.3s; max-height:85vh; overflow-y:auto; }
+        .modal-sheet { background:var(--surface); width:100%; max-width:430px; border-radius:24px 24px 0 0; padding:20px; transform:translateY(100%); transition:0.3s; max-height:85vh; overflow-y:auto; }
         .modal-overlay.open .modal-sheet { transform:translateY(0); }
-        .modal-input { width:100%; padding:14px 18px; border-radius:20px; border:2px solid var(--border); background:var(--surface2); color:var(--text); font-size:0.95rem; outline:none; margin:8px 0; }
+        .modal-input { width:100%; padding:14px; border-radius:20px; border:2px solid var(--border); background:var(--surface2); color:var(--text); outline:none; margin:8px 0; }
         .modal-input:focus { border-color:var(--primary); }
-
-        .settings-item { display:flex; align-items:center; gap:12px; padding:16px; background:var(--surface); border-radius:var(--radius-sm); margin-bottom:8px; cursor:pointer; }
+        .settings-item { display:flex; align-items:center; gap:12px; padding:16px; background:var(--surface); border-radius:14px; margin-bottom:8px; cursor:pointer; }
         .comment-item { display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
-        .comment-avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--primary-dark),var(--primary-light)); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem; flex-shrink:0; cursor:pointer; overflow:hidden; }
-        .comment-author { font-weight:600; color:var(--primary-light); cursor:pointer; }
-
-        .welcome-overlay { position:fixed; inset:0; background:var(--bg); z-index:600; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px; max-width:430px; margin:0 auto; }
+        .comment-avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--primary-light)); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem; }
+        .comment-author { font-weight:600; color:var(--primary-light); }
+        .welcome-overlay { position:fixed; inset:0; background:var(--bg); z-index:600; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px; }
         .welcome-title { font-size:2rem; font-weight:800; color:var(--primary-light); animation:scaleIn 0.5s ease; }
         @keyframes scaleIn { from{opacity:0;transform:scale(0.5);} to{opacity:1;transform:scale(1);} }
         .confetti { position:fixed; pointer-events:none; z-index:1000; font-size:1.5rem; animation:confettiFall 2.5s ease-out forwards; }
         @keyframes confettiFall { 0%{opacity:1;transform:translateY(-100px) rotate(0deg);} 100%{opacity:0;transform:translateY(100vh) rotate(720deg);} }
-
-        @media (min-width:431px) { .app,.login-screen { border-radius:30px; height:95vh; box-shadow:0 20px 60px rgba(0,0,0,0.6); } .chat-screen { border-radius:30px; } }
+        @media (min-width:431px) { .app,.login-screen { border-radius:30px; height:95vh; } .chat-screen { border-radius:30px; } }
     </style>
 </head>
 <body>
-
 <div class="login-screen" id="loginScreen">
     <div class="login-logo">❄️ zocial</div>
     <div class="login-tabs" id="loginSwitch">
@@ -164,25 +140,22 @@
 <div class="main-app" id="mainApp">
     <div class="app">
         <div class="header"><div class="logo">❄️ zocial</div><div class="header-actions"><button class="icon-btn" id="searchBtn">🔍</button></div></div>
-        <div class="main-content" id="mainContent">
+        <div class="main-content">
             <div class="section active" id="feedSection"><div id="feedPosts"></div></div>
-            <div class="section" id="videoSection"><h3 style="color:var(--primary-light);">🎬 видео</h3><div id="videoGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div></div>
             <div class="section" id="bankSection"><div id="bankContent"></div></div>
-            <div class="section" id="messagesSection"><h3 style="color:var(--primary-light);">💬 сообщения</h3><button class="add-contact-btn" id="addContactBtn">🔍 найти пользователя</button><div id="chatListContainer"></div></div>
+            <div class="section" id="messagesSection"><h3 style="color:var(--primary-light);margin-bottom:16px;">💬 сообщения</h3><button class="add-contact-btn" id="addContactBtn">🔍 найти пользователя</button><div id="chatListContainer"></div></div>
             <div class="section" id="profileSection"><div id="profileContent"></div></div>
+            <div class="section" id="contactSection"><div id="contactContent"></div></div>
             <div class="section" id="settingsSection"><div id="settingsContent"></div></div>
         </div>
         <button class="fab hidden" id="fabCreatePost">＋</button>
-
         <div class="chat-screen" id="chatScreen">
             <div class="chat-nav"><button class="back-btn" id="closeChatBtn">←</button><span id="chatScreenName" style="font-weight:600;color:var(--primary-light);">чат</span></div>
             <div class="chat-messages" id="chatMessages"></div>
             <div class="chat-input-bar"><input type="text" class="chat-input" id="chatInput" placeholder="сообщение..."><button class="send-btn" id="chatSendBtn">➤</button></div>
         </div>
-
         <div class="bottom-nav">
             <button class="nav-item active" data-section="feedSection"><span class="nav-icon">🏠</span> лента</button>
-            <button class="nav-item" data-section="videoSection"><span class="nav-icon">🎬</span> видео</button>
             <button class="nav-item" data-section="bankSection"><span class="nav-icon">🏦</span> банк</button>
             <button class="nav-item" data-section="messagesSection"><span class="nav-icon">💬</span> чаты</button>
             <button class="nav-item" data-section="profileSection"><span class="nav-icon">👤</span> профиль</button>
@@ -192,14 +165,14 @@
 
 <div class="modal-overlay" id="createPostModal"><div class="modal-sheet"><h3 style="color:var(--primary-light);">📝 новый пост</h3><textarea class="modal-input" id="postTextInput" rows="3" placeholder="что у вас нового?"></textarea><div style="display:flex;gap:10px;margin-top:12px;"><button class="btn btn-outline" id="cancelPostBtn">отмена</button><button class="btn btn-primary" id="publishPostBtn">опубликовать</button></div></div></div>
 <div class="modal-overlay" id="commentsModal"><div class="modal-sheet"><h3 style="color:var(--primary-light);">💬 комментарии</h3><div id="commentsList"></div><div style="display:flex;gap:8px;margin-top:12px;"><input class="modal-input" id="commentInput" placeholder="комментарий..." style="margin:0;flex:1;"><button class="btn btn-primary" id="commentSend">→</button></div><button class="btn btn-outline" id="closeComments" style="width:100%;margin-top:12px;">закрыть</button></div></div>
-<div class="modal-overlay" id="bankTransferModal"><div class="modal-sheet" style="background:linear-gradient(135deg,#1e3a5f,#162d4a);border:2px solid #3b82f6;"><h3 style="color:var(--gold);text-align:center;">💸 перевод zimcoin</h3><input class="modal-input" id="transferUsername" placeholder="никнейм получателя" style="background:rgba(255,255,255,0.1);color:white;border-color:#3b82f6;"><input class="modal-input" type="number" id="transferAmount" placeholder="сумма" style="background:rgba(255,255,255,0.1);color:white;border-color:#3b82f6;"><div id="transferSuccess" style="text-align:center;color:var(--green);font-weight:700;margin-top:8px;display:none;">✅ перевод успешен!</div><div style="display:flex;gap:10px;margin-top:12px;"><button class="btn btn-outline" id="cancelTransferBtn" style="color:white;border-color:white;">отмена</button><button class="btn btn-primary" id="confirmTransferBtn" style="background:var(--gold);color:#1e3a5f;">отправить</button></div></div></div>
-<div class="modal-overlay" id="depositModal"><div class="modal-sheet"><h3 style="color:var(--primary-light);">🏦 вклад</h3><p style="color:var(--text-secondary);margin-bottom:12px;">вклад под 2% каждые 30 секунд</p><input class="modal-input" type="number" id="depositAmount" placeholder="сумма (мин. 100 🪙)"><div id="depositStatus" style="color:var(--text-secondary);margin:8px 0;"></div><div style="display:flex;gap:10px;margin-top:12px;"><button class="btn btn-outline" id="cancelDepositBtn">отмена</button><button class="btn btn-primary" id="confirmDepositBtn">вложить</button><button class="btn btn-outline" id="withdrawDepositBtn" style="color:var(--accent);border-color:var(--accent);">снять вклад</button></div></div></div>
+<div class="modal-overlay" id="bankTransferModal"><div class="modal-sheet" style="background:linear-gradient(135deg,#1e3a5f,#162d4a);border:2px solid #3b82f6;"><h3 style="color:var(--gold);text-align:center;">💸 перевод</h3><input class="modal-input" id="transferUsername" placeholder="никнейм" style="background:rgba(255,255,255,0.1);color:white;border-color:#3b82f6;"><input class="modal-input" type="number" id="transferAmount" placeholder="сумма" style="background:rgba(255,255,255,0.1);color:white;border-color:#3b82f6;"><div id="transferSuccess" style="text-align:center;color:var(--green);font-weight:700;margin-top:8px;display:none;">✅ успешно!</div><div style="display:flex;gap:10px;margin-top:12px;"><button class="btn btn-outline" id="cancelTransferBtn" style="color:white;border-color:white;">отмена</button><button class="btn btn-primary" id="confirmTransferBtn" style="background:var(--gold);color:#1e3a5f;">отправить</button></div></div></div>
+<div class="modal-overlay" id="depositModal"><div class="modal-sheet"><h3 style="color:var(--primary-light);">🏦 вклад 2%/30с</h3><input class="modal-input" type="number" id="depositAmount" placeholder="сумма (мин. 100 🪙)"><div style="display:flex;gap:10px;margin-top:12px;"><button class="btn btn-outline" id="cancelDepositBtn">отмена</button><button class="btn btn-primary" id="confirmDepositBtn">вложить</button><button class="btn btn-outline" id="withdrawDepositBtn" style="color:var(--accent);border-color:var(--accent);">снять</button></div></div></div>
+<div class="modal-overlay" id="userListModal"><div class="modal-sheet"><h3 style="color:var(--primary-light);" id="userListTitle"></h3><div id="userListContent"></div><button class="btn btn-primary" id="closeUserListBtn" style="width:100%;margin-top:12px;">закрыть</button></div></div>
 
 <script>
 const API = window.location.origin + '/api';
 const $ = id => document.getElementById(id);
-
-async function api(method, endpoint, body = null) {
+async function req(method, endpoint, body = null) {
     try {
         const opts = { method, headers: { 'Content-Type': 'application/json' } };
         if (body) opts.body = JSON.stringify(body);
@@ -211,16 +184,10 @@ async function api(method, endpoint, body = null) {
 let currentUser = null, globalChats = {}, activeChatId = null, activeCommentsPostId = null;
 
 function esc(t) { return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[c]); }
-function animateLike(x, y) {
-    const el = document.createElement('div'); el.className = 'like-animation'; el.textContent = '❤️';
-    el.style.left = x + 'px'; el.style.top = y + 'px'; document.body.appendChild(el); setTimeout(() => el.remove(), 800);
-}
-function floatCoin(x, y, amount) {
-    const el = document.createElement('div'); el.className = 'float-text'; el.textContent = '+' + amount + ' 🪙';
-    el.style.left = x + 'px'; el.style.top = y + 'px'; document.body.appendChild(el); setTimeout(() => el.remove(), 1000);
-}
+function animateLike(x, y) { const el = document.createElement('div'); el.className = 'like-animation'; el.textContent = '❤️'; el.style.left = x + 'px'; el.style.top = y + 'px'; document.body.appendChild(el); setTimeout(() => el.remove(), 800); }
+function floatCoin(x, y, amount) { const el = document.createElement('div'); el.className = 'float-text'; el.textContent = '+' + amount + ' 🪙'; el.style.left = x + 'px'; el.style.top = y + 'px'; document.body.appendChild(el); setTimeout(() => el.remove(), 1000); }
 
-function showWelcome(callback) {
+function showWelcome(cb) {
     for (let i = 0; i < 40; i++) {
         setTimeout(() => {
             const el = document.createElement('div'); el.className = 'confetti';
@@ -230,30 +197,9 @@ function showWelcome(callback) {
         }, i * 30);
     }
     const overlay = document.createElement('div'); overlay.className = 'welcome-overlay';
-    overlay.innerHTML = `<div class="welcome-title">🎉 добро пожаловать!</div><p style="color:var(--text-secondary);">@${currentUser.username}</p><p style="margin-top:20px;">всё готово к использованию!</p>`;
+    overlay.innerHTML = `<div class="welcome-title">🎉 добро пожаловать!</div><p style="color:var(--text-secondary);">@${currentUser.username}</p><p style="margin-top:20px;">всё готово!</p>`;
     document.body.appendChild(overlay);
-    setTimeout(() => { overlay.remove(); if (callback) callback(); }, 2000);
-}
-
-async function login() {
-    const u = $('loginUsername').value.trim().toLowerCase(), p = $('loginPassword').value.trim();
-    if (!u || !p) { $('loginError').textContent = 'заполните поля'; return; }
-    const r = await api('POST', '/login', { username: u, password: p });
-    if (r.error) { $('loginError').textContent = r.error; return; }
-    currentUser = r.user; currentUser.username = u;
-    localStorage.setItem('zocial_session', JSON.stringify(currentUser));
-    showApp();
-}
-
-async function register() {
-    const name = $('regName').value.trim(), username = $('regUsername').value.trim().toLowerCase(), password = $('regPassword').value.trim();
-    if (!name || !username || !password) { $('regError').textContent = 'заполните все поля'; return; }
-    if (username.length < 3) { $('regError').textContent = 'никнейм мин. 3 символа'; return; }
-    const r = await api('POST', '/register', { name, username, password });
-    if (r.error) { $('regError').textContent = r.error; return; }
-    currentUser = { name, username }; localStorage.setItem('zocial_session', JSON.stringify(currentUser));
-    $('loginScreen').classList.add('hidden');
-    showWelcome(() => { $('mainApp').classList.add('visible'); switchSection('feedSection'); loadFeed(); loadChats(); });
+    setTimeout(() => { overlay.remove(); if (cb) cb(); }, 2000);
 }
 
 function showApp() { $('loginScreen').classList.add('hidden'); $('mainApp').classList.add('visible'); switchSection('feedSection'); loadFeed(); loadChats(); }
@@ -264,65 +210,93 @@ function switchSection(id) {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     const nav = document.querySelector(`[data-section="${id}"]`); if (nav) nav.classList.add('active');
     $('mainContent').scrollTop = 0;
-    $('fabCreatePost').classList.toggle('hidden', !['feedSection','videoSection'].includes(id));
+    $('fabCreatePost').classList.toggle('hidden', !['feedSection'].includes(id));
+    if (id === 'feedSection') loadFeed();
+    if (id === 'bankSection') loadBank();
+    if (id === 'messagesSection') loadChats();
+    if (id === 'profileSection') loadProfile();
+    if (id === 'settingsSection') loadSettings();
 }
-
 document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => switchSection(n.dataset.section)));
 
-// ===== ЛЕНТА =====
+// ==== АВТОРИЗАЦИЯ ====
+async function login() {
+    const u = $('loginUsername').value.trim().toLowerCase(), p = $('loginPassword').value.trim();
+    if (!u || !p) { $('loginError').textContent = 'заполните поля'; return; }
+    const r = await req('POST', '/login', { username: u, password: p });
+    if (r.error) { $('loginError').textContent = r.error; return; }
+    currentUser = r.user; currentUser.username = u;
+    localStorage.setItem('zocial_session', JSON.stringify(currentUser));
+    showApp();
+}
+async function register() {
+    const name = $('regName').value.trim(), username = $('regUsername').value.trim().toLowerCase(), password = $('regPassword').value.trim();
+    if (!name || !username || !password) { $('regError').textContent = 'заполните все поля'; return; }
+    if (username.length < 3) { $('regError').textContent = 'никнейм мин. 3 символа'; return; }
+    const r = await req('POST', '/register', { name, username, password });
+    if (r.error) { $('regError').textContent = r.error; return; }
+    currentUser = { name, username }; localStorage.setItem('zocial_session', JSON.stringify(currentUser));
+    $('loginScreen').classList.add('hidden');
+    showWelcome(() => { $('mainApp').classList.add('visible'); switchSection('feedSection'); loadFeed(); loadChats(); });
+}
+
+// ==== ЛЕНТА ====
 async function loadFeed() {
     $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;">загрузка...</div>';
-    const posts = await api('GET', '/posts');
+    const posts = await req('GET', '/posts');
     $('feedPosts').innerHTML = '';
     if (!posts?.length) { $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;">пока нет постов</div>'; return; }
     posts.forEach(post => renderPost(post, $('feedPosts')));
 }
-
-function renderPost(post, container) {
+function renderPost(post, container, showDelete = false) {
     const card = document.createElement('div'); card.className = 'post-card';
     const liked = post.likedBy?.includes(currentUser?.username);
-    card.innerHTML = `<div class="post-header"><div class="post-avatar">${(post.username||'?')[0].toUpperCase()}</div><div class="post-user-info"><div class="post-username">@${esc(post.username)}</div><div class="post-time">${post.time||''}</div></div></div><div class="post-text">${esc(post.text||'')}</div><div class="post-actions"><button class="post-action like-btn ${liked?'liked':''}" data-pid="${post.id}">${liked?'❤️':'🤍'} ${post.likes||0}</button><button class="post-action cmt-btn" data-pid="${post.id}">💬 ${(post.comments||[]).length}</button></div>`;
+    card.innerHTML = `${showDelete&&post.username===currentUser.username?`<button style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--text-secondary);cursor:pointer;" data-pid="${post.id}">✕</button>`:''}
+        <div class="post-header"><div class="post-avatar" id="pa-${post.id}">${(post.username||'?')[0]}</div><div><div class="post-username">@${esc(post.username)}</div><div class="post-time">${post.time||''}</div></div></div>
+        <div class="post-text">${esc(post.text||'')}</div>
+        <div class="post-actions"><button class="post-action like-btn ${liked?'liked':''}" data-pid="${post.id}">${liked?'❤️':'🤍'} ${post.likes||0}</button><button class="post-action cmt-btn" data-pid="${post.id}">💬 ${(post.comments||[]).length}</button></div>`;
+    card.querySelector('.post-avatar').addEventListener('click', () => openContact(post.username));
+    card.querySelector('.post-username').addEventListener('click', () => openContact(post.username));
+    container.appendChild(card);
+    if (showDelete) card.querySelector('[data-pid]')?.addEventListener('click', async e => { e.stopPropagation(); if (confirm('удалить?')) { await req('DELETE', `/posts/${post.id}`, { username: currentUser.username }); loadFeed(); loadProfile(); } });
     card.querySelector('.like-btn').addEventListener('click', async function() {
-        const r = await api('POST', `/posts/${post.id}/like`, { username: currentUser.username });
+        const r = await req('POST', `/posts/${post.id}/like`, { username: currentUser.username });
         if (r.error) return;
         this.classList.toggle('liked', r.liked);
         this.innerHTML = `${r.liked?'❤️':'🤍'} ${r.likes}`;
         if (r.liked) { const rect = this.getBoundingClientRect(); animateLike(rect.left+rect.width/2-16, rect.top-20); }
     });
     card.querySelector('.cmt-btn').addEventListener('click', () => openComments(post.id));
-    container.appendChild(card);
 }
 
-// ===== КОММЕНТАРИИ =====
+// ==== КОММЕНТАРИИ ====
 async function openComments(postId) {
     activeCommentsPostId = postId;
-    const posts = await api('GET', '/posts'); const post = posts.find(p => p.id === postId);
+    const posts = await req('GET', '/posts'); const post = posts.find(p => p.id === postId);
     if (!post) return;
-    $('commentsList').innerHTML = '';
-    if (!post.comments?.length) { $('commentsList').innerHTML = '<div style="text-align:center;padding:20px;">нет комментариев</div>'; }
-    else post.comments.forEach(c => { const d = document.createElement('div'); d.className = 'comment-item'; d.innerHTML = `<div class="comment-avatar">${(c.author||'?')[0]}</div><div><div class="comment-author">@${esc(c.author)}</div><div>${esc(c.text)}</div></div>`; $('commentsList').appendChild(d); });
+    $('commentsList').innerHTML = post.comments?.length ? post.comments.map(c => `<div class="comment-item"><div class="comment-avatar">${(c.author||'?')[0]}</div><div><div class="comment-author">@${esc(c.author)}</div><div>${esc(c.text)}</div></div></div>`).join('') : '<div style="text-align:center;padding:20px;">нет комментариев</div>';
     $('commentInput').value = ''; $('commentsModal').classList.add('open');
 }
 $('closeComments').addEventListener('click', () => $('commentsModal').classList.remove('open'));
 $('commentSend').addEventListener('click', async () => {
     const text = $('commentInput').value.trim(); if (!text || !activeCommentsPostId) return;
-    await api('POST', `/posts/${activeCommentsPostId}/comment`, { username: currentUser.username, text });
+    await req('POST', `/posts/${activeCommentsPostId}/comment`, { username: currentUser.username, authorName: currentUser.name, text });
     $('commentInput').value = ''; openComments(activeCommentsPostId); loadFeed();
 });
 
-// ===== ПОСТЫ =====
+// ==== ПОСТЫ ====
 $('fabCreatePost').addEventListener('click', () => { $('postTextInput').value = ''; $('createPostModal').classList.add('open'); });
 $('cancelPostBtn').addEventListener('click', () => $('createPostModal').classList.remove('open'));
 $('publishPostBtn').addEventListener('click', async () => {
     const text = $('postTextInput').value.trim(); if (!text) return;
-    await api('POST', '/posts', { username: currentUser.username, text });
+    await req('POST', '/posts', { username: currentUser.username, text });
     $('createPostModal').classList.remove('open'); switchSection('feedSection'); loadFeed();
 });
 
-// ===== ЧАТЫ =====
+// ==== ЧАТЫ ====
 async function loadChats() {
     if (!currentUser) return;
-    const result = await api('GET', '/chat/' + currentUser.username);
+    const result = await req('GET', '/chat/' + currentUser.username);
     globalChats = result; $('chatListContainer').innerHTML = '';
     const users = Object.keys(result);
     if (!users.length) { $('chatListContainer').innerHTML = '<div style="text-align:center;padding:40px;">нет сообщений</div>'; return; }
@@ -332,99 +306,120 @@ async function loadChats() {
         div.addEventListener('click', () => openChat(u)); $('chatListContainer').appendChild(div);
     });
 }
-function openChat(username) { activeChatId = username; $('chatScreenName').textContent = '@' + username; renderChatMessages(); $('chatScreen').classList.add('open'); }
+function openChat(u) { activeChatId = u; $('chatScreenName').textContent = '@' + u; renderChatMsgs(); $('chatScreen').classList.add('open'); }
 function closeChat() { $('chatScreen').classList.remove('open'); activeChatId = null; loadChats(); }
-function renderChatMessages() { $('chatMessages').innerHTML = ''; if (!activeChatId || !globalChats[activeChatId]) return; (globalChats[activeChatId]||[]).forEach(m => { const b = document.createElement('div'); b.className = `msg-bubble ${m.from===currentUser.username?'outgoing':'incoming'}`; b.textContent = m.text; $('chatMessages').appendChild(b); }); }
-async function sendMessage() {
+function renderChatMsgs() { $('chatMessages').innerHTML = ''; if (!activeChatId || !globalChats[activeChatId]) return; globalChats[activeChatId].forEach(m => { const b = document.createElement('div'); b.className = 'msg-bubble ' + (m.from === currentUser.username ? 'outgoing' : 'incoming'); b.textContent = m.text; $('chatMessages').appendChild(b); }); }
+async function sendMsg() {
     const text = $('chatInput').value.trim(); if (!text || !activeChatId) return;
-    await api('POST', '/chat/send', { from: currentUser.username, to: activeChatId, text });
-    $('chatInput').value = ''; loadChats().then(() => { if (activeChatId) renderChatMessages(); });
+    await req('POST', '/chat/send', { from: currentUser.username, to: activeChatId, text });
+    $('chatInput').value = ''; loadChats().then(() => { if (activeChatId) renderChatMsgs(); });
 }
 $('closeChatBtn').addEventListener('click', closeChat);
-$('chatSendBtn').addEventListener('click', sendMessage);
-$('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+$('chatSendBtn').addEventListener('click', sendMsg);
+$('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendMsg(); });
 
-// ===== БАНК =====
+// ==== БАНК ====
 async function loadBank() {
-    const bank = await api('GET', '/bank/' + currentUser.username);
+    const bank = await req('GET', '/bank/' + currentUser.username);
     if (bank.error) return;
     $('bankContent').innerHTML = `
-        <div class="bank-balance-card"><div style="color:#93c5fd;">баланс</div><div class="bank-balance-amount" id="bankBalance">${bank.balance.toLocaleString()} 🪙</div><div style="color:#94a3b8;">кликер: +${bank.clickLevel} | пассивный: +${bank.passiveLevel}/сек${bank.depositAmount>0?` | вклад: ${bank.depositAmount.toLocaleString()} 🪙`:''}</div></div>
-        <div class="bank-clicker-area" id="bankClicker"><div class="bank-clicker-coin">🪙</div><div>+${bank.clickLevel}</div></div>
+        <div class="bank-balance-card"><div style="color:#93c5fd;">баланс</div><div class="bank-amount" id="bankBalance">${bank.balance.toLocaleString()} 🪙</div><div style="color:#94a3b8;">кликер: +${bank.clickLevel} | пассив: +${bank.passiveLevel}/сек${bank.depositAmount>0?` | вклад: ${bank.depositAmount} 🪙`:''}</div></div>
+        <div class="bank-clicker" id="bankClicker"><div style="font-size:3rem;">🪙</div><div>+${bank.clickLevel}</div></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;">
             <button class="btn btn-outline" id="bankUpgrade">улучшить<br><small>${(bank.clickLevel*2*50).toLocaleString()} 🪙</small></button>
             <button class="btn btn-outline" id="bankPassive">пассивный<br><small>${((bank.passiveLevel+1)*100).toLocaleString()} 🪙</small></button>
             <button class="btn btn-outline" id="bankDeposit">🏦 вклад</button>
-            <button class="btn btn-outline" id="bankTransfer">💸 перевести</button>
-        </div>
-        <div style="margin-top:20px;"><h4>📋 история</h4>${(bank.history||[]).slice(0,10).map(h=>`<div style="padding:8px;background:var(--surface2);border-radius:8px;margin-bottom:4px;display:flex;justify-content:space-between;"><span>${h.type}</span><span style="color:${h.amount>0?'var(--green)':'var(--accent)'};">${h.amount>0?'+':''}${h.amount} 🪙</span></div>`).join('')||'<div style="text-align:center;padding:10px;">нет операций</div>'}</div>`;
-
-    $('bankClicker').addEventListener('click', async function(e) {
-        const r = await api('POST', '/bank/click', { username: currentUser.username });
-        if (!r.error) { $('bankBalance').textContent = r.balance.toLocaleString() + ' 🪙'; const rect = this.getBoundingClientRect(); floatCoin(rect.left+rect.width/2-20, rect.top-20, bank.clickLevel); }
-    });
-    $('bankUpgrade').addEventListener('click', async () => { const r = await api('POST', '/bank/upgrade', { username: currentUser.username }); if (!r.error) loadBank(); else alert(r.error); });
-    $('bankPassive').addEventListener('click', async () => { const r = await api('POST', '/bank/passive', { username: currentUser.username }); if (!r.error) loadBank(); else alert(r.error); });
-    $('bankDeposit').addEventListener('click', () => { $('depositAmount').value = ''; $('depositStatus').textContent = bank.depositAmount > 0 ? `активный вклад: ${bank.depositAmount} 🪙` : ''; $('depositModal').classList.add('open'); });
+            <button class="btn btn-outline" id="bankTransfer">💸 перевод</button>
+        </div>`;
+    $('bankClicker').addEventListener('click', async function(e) { const r = await req('POST', '/bank/click', { username: currentUser.username }); if (!r.error) { $('bankBalance').textContent = r.balance.toLocaleString() + ' 🪙'; const rect = this.getBoundingClientRect(); floatCoin(rect.left+rect.width/2-20, rect.top-20, bank.clickLevel); } });
+    $('bankUpgrade').addEventListener('click', async () => { const r = await req('POST', '/bank/upgrade', { username: currentUser.username }); if (!r.error) loadBank(); else alert(r.error); });
+    $('bankPassive').addEventListener('click', async () => { const r = await req('POST', '/bank/passive', { username: currentUser.username }); if (!r.error) loadBank(); else alert(r.error); });
+    $('bankDeposit').addEventListener('click', () => { $('depositAmount').value = ''; $('depositModal').classList.add('open'); });
     $('bankTransfer').addEventListener('click', () => { $('transferUsername').value = ''; $('transferAmount').value = ''; $('transferSuccess').style.display = 'none'; $('bankTransferModal').classList.add('open'); });
 }
-
-$('confirmDepositBtn').addEventListener('click', async () => {
-    const amount = $('depositAmount').value;
-    const r = await api('POST', '/bank/deposit', { username: currentUser.username, amount });
-    if (r.error) { alert(r.error); return; }
-    $('depositModal').classList.remove('open'); loadBank();
-});
-$('withdrawDepositBtn').addEventListener('click', async () => {
-    const r = await api('POST', '/bank/withdraw', { username: currentUser.username });
-    if (r.error) { alert(r.error); return; }
-    $('depositModal').classList.remove('open'); loadBank();
-});
+$('confirmDepositBtn').addEventListener('click', async () => { const r = await req('POST', '/bank/deposit', { username: currentUser.username, amount: $('depositAmount').value }); if (r.error) alert(r.error); else { $('depositModal').classList.remove('open'); loadBank(); } });
+$('withdrawDepositBtn').addEventListener('click', async () => { const r = await req('POST', '/bank/withdraw', { username: currentUser.username }); if (r.error) alert(r.error); else { $('depositModal').classList.remove('open'); loadBank(); } });
 $('cancelDepositBtn').addEventListener('click', () => $('depositModal').classList.remove('open'));
-
 $('confirmTransferBtn').addEventListener('click', async () => {
     const to = $('transferUsername').value.trim(), amount = parseInt($('transferAmount').value);
     if (!to || !amount || amount < 1) return;
-    const r = await api('POST', '/bank/transfer', { from: currentUser.username, to, amount });
+    const r = await req('POST', '/bank/transfer', { from: currentUser.username, to, amount });
     if (r.error) { alert(r.error); return; }
     $('transferSuccess').style.display = 'block';
     setTimeout(() => { $('bankTransferModal').classList.remove('open'); loadBank(); loadChats(); }, 1200);
 });
 $('cancelTransferBtn').addEventListener('click', () => $('bankTransferModal').classList.remove('open'));
 
-// ===== ПРОФИЛЬ =====
+// ==== ПРОФИЛЬ ====
 async function loadProfile() {
-    const bank = await api('GET', '/bank/' + currentUser.username);
+    const bank = await req('GET', '/bank/' + currentUser.username);
+    const posts = await req('GET', '/posts');
+    const myPosts = posts.filter(p => p.username === currentUser.username);
+    const subs = await req('GET', '/subs/' + currentUser.username);
+    const followers = (await req('GET', '/users')).filter(u => subs.includes(u.username)).length;
+
     $('profileContent').innerHTML = `
-        <div class="profile-header"><div class="profile-avatar">${currentUser.name[0].toUpperCase()}</div><div class="profile-info"><div class="profile-name">${esc(currentUser.name)}</div><div class="profile-username">@${esc(currentUser.username)}</div></div></div>
-        <div class="profile-stats"><div class="stat-item"><div class="stat-number">${bank.balance.toLocaleString()}</div><div class="stat-label">🪙</div></div></div>
-        <div class="profile-actions"><button class="btn btn-outline" id="profileSettingsBtn">⚙️ настройки</button></div>`;
+        <div class="profile-header"><div class="profile-avatar">${currentUser.name[0]}</div><div class="profile-info"><div class="profile-name">${esc(currentUser.name)}</div><div class="profile-username">@${esc(currentUser.username)}</div></div></div>
+        <div class="profile-stats">
+            <div class="stat-item"><div class="stat-number">${myPosts.length}</div><div class="stat-label">постов</div></div>
+            <div class="stat-item" id="statSubs"><div class="stat-number">${subs.length}</div><div class="stat-label">подписок</div></div>
+            <div class="stat-item" id="statFollowers"><div class="stat-number">${followers}</div><div class="stat-label">подписчиков</div></div>
+            <div class="stat-item"><div class="stat-number">${bank.balance.toLocaleString()}</div><div class="stat-label">🪙</div></div>
+        </div>
+        <div style="display:flex;gap:10px;margin:16px 0;"><button class="btn btn-outline" id="profileSettingsBtn">⚙️ настройки</button></div>
+        <h4 style="color:var(--primary-light);margin:16px 0;">мои посты</h4><div id="myPostsList"></div>`;
+
+    const myPostsContainer = document.getElementById('myPostsList');
+    if (!myPosts.length) { myPostsContainer.innerHTML = '<div style="text-align:center;padding:20px;">нет постов</div>'; }
+    else myPosts.forEach(p => renderPost(p, myPostsContainer, true));
+
+    $('statSubs').addEventListener('click', () => showUserList('подписки', subs));
+    $('statFollowers').addEventListener('click', () => showUserList('подписчики', Object.keys(DB).filter(u => subs.includes(u))));
     $('profileSettingsBtn').addEventListener('click', () => switchSection('settingsSection'));
 }
 
-// ===== НАСТРОЙКИ =====
+// ==== КОНТАКТ ====
+async function openContact(username) {
+    if (username === currentUser.username) { switchSection('profileSection'); return; }
+    const r = await req('GET', '/users');
+    const user = r.find(u => u.username === username);
+    const subs = await req('GET', '/subs/' + currentUser.username);
+    const isSub = subs.includes(username);
+    switchSection('contactSection');
+    $('contactContent').innerHTML = `
+        <div class="profile-header"><div class="profile-avatar">${(user?.name||username)[0]}</div><div class="profile-info"><div class="profile-name">${esc(user?.name||username)}</div><div class="profile-username">@${esc(username)}</div></div></div>
+        <div style="display:flex;gap:10px;margin:16px 0;">
+            <button class="btn btn-primary" id="contactChatBtn">💬 написать</button>
+            <button class="btn btn-outline" id="contactSubBtn">${isSub?'✅ подписан':'➕ подписаться'}</button>
+            <button class="btn btn-outline" id="contactBackBtn">← назад</button>
+        </div>`;
+    $('contactChatBtn').addEventListener('click', () => openChat(username));
+    $('contactSubBtn').addEventListener('click', async () => {
+        const r = await req('POST', '/subs/toggle', { subscriber: currentUser.username, target: username });
+        $('contactSubBtn').textContent = r.subscribed ? '✅ подписан' : '➕ подписаться';
+    });
+    $('contactBackBtn').addEventListener('click', () => switchSection('feedSection'));
+}
+
+async function showUserList(title, users) {
+    $('userListTitle').textContent = title;
+    $('userListContent').innerHTML = users.map(u => `<div class="settings-item" style="cursor:pointer;" data-u="${u}">@${esc(u)}</div>`).join('');
+    $('userListContent').querySelectorAll('.settings-item').forEach(el => el.addEventListener('click', () => { $('userListModal').classList.remove('open'); openContact(el.dataset.u); }));
+    $('userListModal').classList.add('open');
+}
+$('closeUserListBtn').addEventListener('click', () => $('userListModal').classList.remove('open'));
+
+// ==== НАСТРОЙКИ ====
 function loadSettings() {
     $('settingsContent').innerHTML = `
         <h3 style="color:var(--primary-light);margin-bottom:24px;">⚙️ настройки</h3>
         <div class="settings-item" id="setTheme"><span>🎨</span><span style="flex:1;">тема</span><span>${document.body.classList.contains('theme-light')?'светлая':'тёмная'}</span></div>
-        <div class="settings-item" id="setLogout"><span>🚪</span><span style="flex:1;color:var(--accent);">выйти</span></div>`;
+        <div class="settings-item" id="setLogout"><span>🚪</span><span style="color:var(--accent);">выйти</span></div>`;
     $('setTheme').addEventListener('click', () => { document.body.classList.toggle('theme-light'); localStorage.setItem('zc_theme', document.body.classList.contains('theme-light')?'light':'dark'); loadSettings(); });
     $('setLogout').addEventListener('click', () => { localStorage.removeItem('zocial_session'); location.reload(); });
 }
 
-// Переключаем switchSection для загрузки данных
-const origSwitch = switchSection;
-switchSection = function(id) {
-    origSwitch(id);
-    if (id === 'feedSection') loadFeed();
-    if (id === 'videoSection') { $('videoGrid').innerHTML = '<div style="text-align:center;padding:40px;grid-column:1/-1;">скоро</div>'; }
-    if (id === 'bankSection') loadBank();
-    if (id === 'messagesSection') loadChats();
-    if (id === 'profileSection') loadProfile();
-    if (id === 'settingsSection') loadSettings();
-};
-
-// Остальное
+// Переключатель входа
 document.querySelectorAll('.login-tab').forEach(tab => tab.addEventListener('click', function() {
     document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active')); this.classList.add('active');
     document.querySelector('.login-tab-slider').classList.toggle('right', this.dataset.tab === 'register');
@@ -433,7 +428,7 @@ document.querySelectorAll('.login-tab').forEach(tab => tab.addEventListener('cli
 }));
 $('loginSubmitBtn').addEventListener('click', login);
 $('regSubmitBtn').addEventListener('click', register);
-$('searchBtn').addEventListener('click', () => { const q = prompt('никнейм:'); if (q) openChat(q.toLowerCase()); });
+$('searchBtn').addEventListener('click', () => { const q = prompt('никнейм:'); if (q) openContact(q.toLowerCase()); });
 $('addContactBtn').addEventListener('click', () => { const q = prompt('никнейм:'); if (q && q !== currentUser.username) openChat(q.toLowerCase()); });
 
 // Автовход
@@ -443,7 +438,7 @@ $('addContactBtn').addEventListener('click', () => { const q = prompt('никн�
     if (session) {
         try {
             const saved = JSON.parse(session);
-            const r = await api('POST', '/login', { username: saved.username, password: '' });
+            const r = await req('POST', '/login', { username: saved.username, password: '' });
             if (r.error) throw new Error('no session');
             currentUser = saved; showApp();
         } catch (e) { localStorage.removeItem('zocial_session'); $('loginScreen').classList.remove('hidden'); }
@@ -451,4 +446,4 @@ $('addContactBtn').addEventListener('click', () => { const q = prompt('никн�
 })();
 </script>
 </body>
-    </html>
+</html>
