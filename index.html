@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>❄️ Zocial 0.1 (beta)</title>
+    <title>Zocial 0.1 (beta)</title>
     <style>
         :root {
             --primary: #2563eb; --primary-light: #60a5fa; --bg: #0a0a1a; --surface: #1a1a2e;
@@ -63,6 +63,7 @@
         .attach-btn { display:flex; align-items:center; gap:6px; padding:8px 16px; border-radius:20px; background:var(--surface2); border:1px solid var(--border); color:var(--primary-light); cursor:pointer; margin:8px 0; font-size:0.9rem; }
         .image-preview { width:100%; max-height:200px; object-fit:contain; border-radius:14px; margin:8px 0; display:none; }
         .verified-badge { display:inline-block; width:16px; height:16px; background:var(--primary); border-radius:50%; font-size:0.6rem; color:white; text-align:center; line-height:16px; margin-left:2px; flex-shrink:0; }
+        .ai-badge { display:inline-block; padding:2px 8px; background:linear-gradient(135deg,#6366f1,#8b5cf6); border-radius:10px; font-size:0.65rem; color:white; margin-left:4px; }
         
         .like-animation { position:fixed; pointer-events:none; z-index:999; font-size:2rem; animation:likeFloat 0.8s ease-out forwards; }
         @keyframes likeFloat { 0%{opacity:1;transform:translateY(0) scale(1);} 50%{opacity:1;transform:translateY(-40px) scale(1.3);} 100%{opacity:0;transform:translateY(-80px) scale(0.8);} }
@@ -92,6 +93,7 @@
         .msg-bubble { max-width:80%; padding:12px 16px; border-radius:20px; font-size:0.9rem; }
         .msg-bubble.incoming { background:var(--surface2); align-self:flex-start; border-bottom-left-radius:6px; }
         .msg-bubble.outgoing { background:var(--primary); color:white; align-self:flex-end; border-bottom-right-radius:6px; }
+        .msg-bubble.ai { background:linear-gradient(135deg,#6366f1,#8b5cf6); color:white; align-self:flex-start; border-bottom-left-radius:6px; }
         .chat-input-bar { display:flex; gap:8px; padding:12px 16px; padding-bottom:calc(12px + var(--safe-bottom)); background:var(--surface); }
         .chat-input { flex:1; background:var(--surface2); border:1px solid var(--border); padding:12px 18px; border-radius:25px; color:var(--text); outline:none; }
         .send-btn { width:44px; height:44px; border-radius:50%; background:var(--primary); border:none; color:white; font-size:1.2rem; cursor:pointer; }
@@ -150,7 +152,7 @@
 <body>
 <div class="login-screen" id="loginScreen">
     <img src="https://imgfy.ru/ib/JGoGzQlCDIcONHE_1778078416.webp" class="login-logo-img" alt="Zocial">
-    <div class="login-version">версия 0.1 (beta) · zima.dev</div>
+    <div class="login-version">версия 0.1 (beta) · zima.dev · © 2026</div>
     <div class="login-tabs" id="loginSwitch">
         <div class="login-tab-slider"></div>
         <button class="login-tab active" data-tab="login">вход</button>
@@ -186,11 +188,12 @@
             <div class="pages-container" id="pagesContainer">
                 <div class="page" id="feedPage"><div id="feedPosts"></div></div>
                 <div class="page" id="bankPage"><div id="bankContent"></div></div>
+                <div class="page" id="aiPage"><div id="aiContent"></div></div>
                 <div class="page" id="chatsPage"><h3 style="color:var(--primary-light);margin-bottom:16px;">💬 сообщения</h3><button class="add-contact-btn" style="width:100%;padding:14px;background:var(--surface);border:2px dashed var(--primary);border-radius:14px;color:var(--primary-light);cursor:pointer;margin-bottom:12px;" id="addContactBtn">🔍 найти пользователя</button><div id="chatListContainer"></div></div>
                 <div class="page" id="profilePage"><div id="profileContent"></div></div>
                 <div class="page" id="contactPage"><div id="contactContent"></div></div>
                 <div class="page" id="settingsPage"><div id="settingsContent"></div></div>
-                <div class="page" id="aboutPage"><div style="text-align:center;padding:40px 20px;"><img src="https://imgfy.ru/ib/JGoGzQlCDIcONHE_1778078416.webp" style="width:120px;height:120px;border-radius:25px;margin-bottom:16px;" alt="Zocial"><p style="color:var(--text-secondary);">версия 0.1 (beta)</p><p style="margin-top:20px;color:var(--text-secondary);">социальная сеть с банком, чатами и видео</p><p style="margin-top:8px;color:var(--primary-light);">© 2025 zima.dev</p><button class="btn btn-outline" id="aboutBackBtn" style="margin-top:24px;">← назад</button></div></div>
+                <div class="page" id="aboutPage"><div style="text-align:center;padding:40px 20px;"><img src="https://imgfy.ru/ib/JGoGzQlCDIcONHE_1778078416.webp" style="width:120px;height:120px;border-radius:25px;margin-bottom:16px;" alt="Zocial"><p style="color:var(--text-secondary);">версия 0.1 (beta)</p><p style="margin-top:20px;color:var(--text-secondary);">социальная сеть с банком, чатами и AI</p><p style="margin-top:8px;color:var(--primary-light);">© 2026 zima.dev</p><button class="btn btn-outline" id="aboutBackBtn" style="margin-top:24px;">← назад</button></div></div>
             </div>
         </div>
         <button class="fab hidden" id="fabCreatePost">＋</button>
@@ -208,6 +211,7 @@
         <div class="bottom-nav">
             <button class="nav-item active" data-page="feed"><span class="nav-icon">🏠</span> лента</button>
             <button class="nav-item" data-page="bank"><span class="nav-icon">🏦</span> банк</button>
+            <button class="nav-item" data-page="ai"><span class="nav-icon">🧠</span> gray ai</button>
             <button class="nav-item" data-page="chats"><span class="nav-icon">💬</span> чаты</button>
             <button class="nav-item" data-page="profile"><span class="nav-icon">👤</span> профиль</button>
         </div>
@@ -215,7 +219,7 @@
 </div>
 
 <div class="modal-overlay" id="createPostModal">
-    <div class="modal-sheet"><h3 style="color:var(--primary-light);" id="createPostTitle">📝 новый пост</h3><textarea class="modal-input" id="postTextInput" rows="3" placeholder="что у вас нового?"></textarea><input type="file" id="postImageInput" accept="image/*" style="display:none;"><button class="attach-btn" id="attachImageBtn">🖼️ прикрепить фото</button><img id="postImagePreview" class="image-preview" alt="превью"><div style="display:flex;gap:10px;margin-top:12px;"><button class="btn btn-outline" id="cancelPostBtn">отмена</button><button class="btn btn-primary" id="publishPostBtn">опубликовать</button></div></div></div>
+    <div class="modal-sheet"><h3 style="color:var(--primary-light);">📝 новый пост</h3><textarea class="modal-input" id="postTextInput" rows="3" placeholder="что у вас нового?"></textarea><input type="file" id="postImageInput" accept="image/*" style="display:none;"><button class="attach-btn" id="attachImageBtn">🖼️ прикрепить фото</button><img id="postImagePreview" class="image-preview" alt="превью"><div style="display:flex;gap:10px;margin-top:12px;"><button class="btn btn-outline" id="cancelPostBtn">отмена</button><button class="btn btn-primary" id="publishPostBtn">опубликовать</button></div></div></div>
 <div class="modal-overlay" id="commentsModal"><div class="modal-sheet"><h3 style="color:var(--primary-light);">💬 комментарии</h3><div id="commentsList"></div><div style="display:flex;gap:8px;margin-top:12px;"><input class="modal-input" id="commentInput" placeholder="комментарий..." style="margin:0;flex:1;"><button class="btn btn-primary" id="commentSend">→</button></div><button class="btn btn-outline" id="closeComments" style="width:100%;margin-top:12px;">закрыть</button></div></div>
 <div class="modal-overlay" id="bankTransferModal"><div class="modal-sheet" style="background:linear-gradient(135deg,#1e3a5f,#162d4a);border:2px solid #3b82f6;"><h3 style="color:var(--gold);text-align:center;">💸 перевод</h3><input class="modal-input" id="transferUsername" placeholder="никнейм" style="background:rgba(255,255,255,0.1);color:white;border-color:#3b82f6;"><input class="modal-input" type="number" id="transferAmount" placeholder="сумма" style="background:rgba(255,255,255,0.1);color:white;border-color:#3b82f6;"><div id="transferSuccess" style="text-align:center;color:var(--green);font-weight:700;margin-top:8px;display:none;">✅ успешно!</div><div style="display:flex;gap:10px;margin-top:12px;"><button class="btn btn-outline" id="cancelTransferBtn" style="color:white;border-color:white;">отмена</button><button class="btn btn-primary" id="confirmTransferBtn" style="background:var(--gold);color:#1e3a5f;">отправить</button></div></div></div>
 <div class="modal-overlay" id="depositModal"><div class="modal-sheet"><h3 style="color:var(--primary-light);">🏦 вклад 2%/30с</h3><input class="modal-input" type="number" id="depositAmount" placeholder="сумма (мин. 100 🪙)"><div style="display:flex;gap:10px;margin-top:12px;"><button class="btn btn-outline" id="cancelDepositBtn">отмена</button><button class="btn btn-primary" id="confirmDepositBtn">вложить</button><button class="btn btn-outline" id="withdrawDepositBtn" style="color:var(--accent);border-color:var(--accent);">снять</button></div></div></div>
@@ -241,7 +245,7 @@ function isVerified(username) { return verifiedList.includes(username); }
 
 function switchPage(page) {
     currentPage = page;
-    const pages = ['feed', 'bank', 'chats', 'profile', 'contact', 'settings', 'about'];
+    const pages = ['feed', 'bank', 'ai', 'chats', 'profile', 'contact', 'settings', 'about'];
     const idx = pages.indexOf(page);
     $('pagesContainer').style.transform = `translateX(-${idx * 100}%)`;
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -249,6 +253,7 @@ function switchPage(page) {
     $('fabCreatePost').classList.toggle('hidden', page !== 'feed');
     if (page === 'feed') renderFeedFromCache();
     else if (page === 'bank') loadBank();
+    else if (page === 'ai') loadAI();
     else if (page === 'chats') loadChats();
     else if (page === 'profile') loadProfile();
     else if (page === 'settings') loadSettings();
@@ -267,7 +272,7 @@ function showApp() { $('loginScreen').classList.add('hidden'); $('mainApp').clas
 
 function showWelcome(cb) {
     for (let i = 0; i < 40; i++) setTimeout(() => { const el = document.createElement('div'); el.className = 'confetti'; el.textContent = ['🎉','✨','❄️','🎊'][Math.floor(Math.random()*4)]; el.style.left = Math.random() * 100 + '%'; el.style.top = -(Math.random() * 100) + 'px'; document.body.appendChild(el); setTimeout(() => el.remove(), 2500); }, i * 25);
-    const slides = [{ icon: '🏠', title: 'лента', desc: 'публикуйте посты с фото' }, { icon: '💬', title: 'чаты', desc: 'общайтесь в реальном времени' }, { icon: '🏦', title: 'zima.bank', desc: 'зарабатывайте zimcoin' }, { icon: '👤', title: 'профиль', desc: 'подписывайтесь, меняйте аватар' }];
+    const slides = [{ icon: '🏠', title: 'лента', desc: 'публикуйте посты с фото' }, { icon: '💬', title: 'чаты', desc: 'общайтесь в реальном времени' }, { icon: '🏦', title: 'zima.bank', desc: 'зарабатывайте zimcoin' }, { icon: '🧠', title: 'gray ai', desc: 'общайтесь с нейросетью' }];
     const overlay = document.createElement('div'); overlay.className = 'welcome-overlay';
     overlay.innerHTML = `<div class="welcome-title">🎉 добро пожаловать!</div><p style="color:var(--text-secondary);">@${currentUser.username}</p><div id="onbSlide" style="margin:20px 0;"></div><div class="onboarding-dots" id="onbDots"></div><button class="btn btn-primary" id="onbNext">далее</button>`;
     document.body.appendChild(overlay);
@@ -310,13 +315,8 @@ async function register() {
     showWelcome(() => { $('mainApp').classList.add('visible'); switchPage('feed'); loadFeed(); loadChats(); });
 }
 
-// ПОИСК (ИСПРАВЛЕНО)
-$('searchBtn').addEventListener('click', () => { 
-    $('searchPanel').classList.add('open'); 
-    $('searchInput').value = ''; 
-    $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">введите запрос</div>'; 
-    setTimeout(() => $('searchInput').focus(), 300); 
-});
+// ПОИСК
+$('searchBtn').addEventListener('click', () => { $('searchPanel').classList.add('open'); $('searchInput').value = ''; $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">введите запрос</div>'; setTimeout(() => $('searchInput').focus(), 300); });
 $('closeSearchPanel').addEventListener('click', () => $('searchPanel').classList.remove('open'));
 let searchTimeout;
 $('searchInput').addEventListener('input', () => {
@@ -326,41 +326,15 @@ $('searchInput').addEventListener('input', () => {
     searchTimeout = setTimeout(async () => {
         $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;">поиск...</div>';
         const results = await req('GET', '/users/search?q=' + encodeURIComponent(q));
-        if (!results || !Array.isArray(results) || results.length === 0) { 
-            $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">ничего не найдено</div>'; 
-            return; 
-        }
-        $('searchResults').innerHTML = results.map(u => `
-            <div class="search-result-item" data-u="${u.username}">
-                <div class="post-avatar" style="width:44px;height:44px;font-size:0.9rem;">${u.avatar ? `<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : (u.name||u.username)[0].toUpperCase()}</div>
-                <div style="flex:1;">
-                    <div style="font-weight:600;">${esc(u.name)}${isVerified(u.username)?' <span class="verified-badge">✓</span>':''}</div>
-                    <div style="color:var(--primary-light);font-size:0.85rem;">@${esc(u.username)}</div>
-                </div>
-            </div>
-        `).join('');
-        $('searchResults').querySelectorAll('.search-result-item').forEach(el => el.addEventListener('click', () => { 
-            $('searchPanel').classList.remove('open'); 
-            openContact(el.dataset.u); 
-        }));
+        if (!results || !Array.isArray(results) || results.length === 0) { $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">ничего не найдено</div>'; return; }
+        $('searchResults').innerHTML = results.map(u => `<div class="search-result-item" data-u="${u.username}"><div class="post-avatar" style="width:44px;height:44px;font-size:0.9rem;">${u.avatar ? `<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : (u.name||u.username)[0].toUpperCase()}</div><div style="flex:1;"><div style="font-weight:600;">${esc(u.name)}${isVerified(u.username)?' <span class="verified-badge">✓</span>':''}</div><div style="color:var(--primary-light);font-size:0.85rem;">@${esc(u.username)}</div></div></div>`).join('');
+        $('searchResults').querySelectorAll('.search-result-item').forEach(el => el.addEventListener('click', () => { $('searchPanel').classList.remove('open'); openContact(el.dataset.u); }));
     }, 300);
 });
 
-// ЛЕНТА (ПОСТЫ БОЛЬШЕ НЕ УДАЛЯЮТ АККАУНТЫ)
-async function loadFeed() { 
-    $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;">загрузка...</div>'; 
-    const posts = await req('GET', '/posts'); 
-    allPostsCache = Array.isArray(posts) ? posts : []; 
-    renderFeedFromCache(); 
-}
-function renderFeedFromCache() { 
-    $('feedPosts').innerHTML = ''; 
-    if (!allPostsCache.length) { 
-        $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">пока нет постов</div>'; 
-        return; 
-    } 
-    allPostsCache.forEach(post => renderPost(post, $('feedPosts'))); 
-}
+// ЛЕНТА
+async function loadFeed() { $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;">загрузка...</div>'; const posts = await req('GET', '/posts'); allPostsCache = Array.isArray(posts) ? posts : []; renderFeedFromCache(); }
+function renderFeedFromCache() { $('feedPosts').innerHTML = ''; if (!allPostsCache.length) { $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">пока нет постов</div>'; return; } allPostsCache.forEach(post => renderPost(post, $('feedPosts'))); }
 function renderPost(post, container, showDelete = false) {
     const card = document.createElement('div'); card.className = 'post-card';
     const liked = post.likedBy?.includes(currentUser?.username);
@@ -398,7 +372,7 @@ async function openComments(postId) { activeCommentsPostId = postId; const post 
 $('closeComments').addEventListener('click', () => $('commentsModal').classList.remove('open'));
 $('commentSend').addEventListener('click', async () => { const text = $('commentInput').value.trim(); if (!text || !activeCommentsPostId) return; await req('POST', `/posts/${activeCommentsPostId}/comment`, { username: currentUser.username, text }); $('commentInput').value = ''; openComments(activeCommentsPostId); loadFeed(); });
 
-// ПОСТЫ (БОЛЬШЕ НЕ УДАЛЯЮТ АККАУНТЫ)
+// ПОСТЫ
 $('fabCreatePost').addEventListener('click', () => { $('postTextInput').value = ''; $('createPostTitle').textContent = '📝 новый пост'; $('publishPostBtn').textContent = 'опубликовать'; editingPostId = null; $('postImagePreview').style.display = 'none'; tempPostMedia = null; tempPostMediaType = null; $('createPostModal').classList.add('open'); });
 $('cancelPostBtn').addEventListener('click', () => { $('createPostModal').classList.remove('open'); editingPostId = null; });
 $('publishPostBtn').addEventListener('click', async () => {
@@ -410,6 +384,37 @@ $('publishPostBtn').addEventListener('click', async () => {
 });
 $('attachImageBtn').addEventListener('click', () => $('postImageInput').click());
 $('postImageInput').addEventListener('change', () => { const f = $('postImageInput').files[0]; if (!f) return; const r = new FileReader(); r.onload = e => { tempPostMedia = e.target.result; tempPostMediaType = 'image'; $('postImagePreview').src = tempPostMedia; $('postImagePreview').style.display = 'block'; }; r.readAsDataURL(f); });
+
+// GRAY AI
+function loadAI() {
+    $('aiContent').innerHTML = `
+        <div style="text-align:center;padding:40px 20px;">
+            <div style="font-size:4rem;">🧠</div>
+            <h2 style="color:var(--primary-light);">gray ai</h2>
+            <p style="color:var(--text-secondary);margin-bottom:20px;">нейросеть zocial</p>
+            <div id="aiChat" style="text-align:left;margin-bottom:16px;"></div>
+            <div style="display:flex;gap:8px;">
+                <input type="text" class="modal-input" id="aiPrompt" placeholder="спроси что-нибудь..." style="flex:1;margin:0;">
+                <button class="btn btn-primary" id="aiSend">→</button>
+            </div>
+        </div>`;
+    $('aiSend').addEventListener('click', async () => {
+        const prompt = $('aiPrompt').value.trim();
+        if (!prompt) return;
+        const aiChat = $('aiChat');
+        aiChat.innerHTML += `<div class="msg-bubble outgoing" style="margin-bottom:8px;">${esc(prompt)}</div>`;
+        $('aiPrompt').value = '';
+        aiChat.innerHTML += '<div class="msg-bubble ai" style="margin-bottom:8px;">думаю...</div>';
+        aiChat.scrollTop = aiChat.scrollHeight;
+        try {
+            const r = await req('POST', '/grayai', { prompt });
+            aiChat.innerHTML = aiChat.innerHTML.replace('думаю...', esc(r.response || 'не знаю что сказать'));
+        } catch (e) {
+            aiChat.innerHTML = aiChat.innerHTML.replace('думаю...', 'ошибка соединения');
+        }
+    });
+    $('aiPrompt').addEventListener('keydown', e => { if (e.key === 'Enter') $('aiSend').click(); });
+}
 
 // ЧАТЫ
 async function loadChats() { if (!currentUser) return; const result = await req('GET', '/chat/' + currentUser.username); globalChats = result || {}; $('chatListContainer').innerHTML = ''; const users = Object.keys(globalChats); if (!users.length) { $('chatListContainer').innerHTML = '<div style="text-align:center;padding:40px;">нет сообщений</div>'; return; } users.forEach(u => { const msgs = globalChats[u] || []; const div = document.createElement('div'); div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px;background:var(--surface);border-radius:14px;margin-bottom:8px;cursor:pointer;border:1px solid var(--border);'; const chatUser = allUsersCache.find(x => x.username === u); div.innerHTML = `<div class="post-avatar" style="width:48px;height:48px;">${chatUser?.avatar ? `<img src="${chatUser.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : u[0].toUpperCase()}</div><div><div style="font-weight:600;">@${esc(u)}${isVerified(u)?' <span class="verified-badge">✓</span>':''}</div><div style="font-size:0.8rem;color:var(--text-secondary);">${msgs.length?msgs[msgs.length-1].text:''}</div></div>`; div.addEventListener('click', () => openChat(u)); $('chatListContainer').appendChild(div); }); }
@@ -426,8 +431,8 @@ $('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendMsg
 async function loadBank() {
     const bank = await req('GET', '/bank/' + currentUser.username);
     if (bank.error) return;
-    $('bankContent').innerHTML = `<div class="bank-balance-card"><div style="color:#93c5fd;">баланс</div><div class="bank-amount" id="bankBalance">${bank.balance.toLocaleString()} 🪙</div><div style="color:#94a3b8;">кликер: +${bank.clickLevel} | пассив: +${bank.passiveLevel}/сек</div>${bank.depositAmount > 0 ? `<div style="color:#93c5fd;">вклад: ${bank.depositAmount.toLocaleString()} 🪙 (2%/30с)</div>` : ''}${bank.savingsBalance > 0 ? `<div style="color:#10b981;">сбережения: ${bank.savingsBalance.toLocaleString()} 🪙</div>` : ''}</div><div class="bank-clicker" id="bankClicker"><div style="font-size:3rem;">🪙</div><div>+${bank.clickLevel}</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;"><button class="btn btn-outline" id="bankUpgrade">улучшить<br><small>${(bank.clickLevel*2*50).toLocaleString()} 🪙</small></button><button class="btn btn-outline" id="bankPassive">пассивный<br><small>${((bank.passiveLevel+1)*100).toLocaleString()} 🪙</small></button><button class="btn btn-outline" id="bankDeposit">🏦 вклад</button><button class="btn btn-outline" id="bankTransfer">💸 перевод</button><button class="btn btn-outline" id="bankSavingsDeposit">🔒 сбережения</button><button class="btn btn-outline" id="bankSavingsWithdraw">🔓 снять сбережения</button></div><div style="margin-top:20px;"><h4 style="color:var(--primary-light);">📋 история</h4>${(bank.history||[]).slice(0, 10).map(h => `<div style="display:flex;justify-content:space-between;padding:8px;background:var(--surface2);border-radius:8px;margin-bottom:4px;"><span>${h.type}</span><span style="color:${h.amount>0?'var(--green)':'var(--accent)'};">${h.amount>0?'+':''}${h.amount} 🪙</span><span style="font-size:0.7rem;color:var(--text-secondary);">${h.time}</span></div>`).join('')||'<div style="text-align:center;padding:10px;">нет операций</div>'}</div>`;
-    $('bankClicker').addEventListener('click', async function(e) { const r = await req('POST', '/bank/click', { username: currentUser.username }); if (!r.error) { $('bankBalance').textContent = r.balance.toLocaleString() + ' 🪙'; const rect = this.getBoundingClientRect(); floatCoin(rect.left+rect.width/2-20, rect.top-20, bank.clickLevel); } });
+    $('bankContent').innerHTML = `<div class="bank-balance-card"><div style="color:#93c5fd;">баланс</div><div class="bank-amount" id="bankBalance">${bank.balance.toLocaleString()} 🪙</div><div style="color:#94a3b8;">кликер: +${bank.clickLevel} | пассив: +${bank.passiveLevel}/сек</div>${bank.depositAmount > 0 ? `<div style="color:#93c5fd;">вклад: ${bank.depositAmount.toLocaleString()} 🪙 (2%/30с)</div>` : ''}${bank.savingsBalance > 0 ? `<div style="color:#10b981;">сбережения: ${bank.savingsBalance.toLocaleString()} 🪙</div>` : ''}</div><div class="bank-clicker" id="bankClicker"><div style="font-size:3rem;">🪙</div><div>+${bank.clickLevel}</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;"><button class="btn btn-outline" id="bankUpgrade">улучшить<br><small>${(bank.clickLevel*2*50).toLocaleString()} 🪙</small></button><button class="btn btn-outline" id="bankPassive">пассивный<br><small>${((bank.passiveLevel+1)*100).toLocaleString()} 🪙</small></button><button class="btn btn-outline" id="bankDeposit">🏦 вклад</button><button class="btn btn-outline" id="bankTransfer">💸 перевод</button><button class="btn btn-outline" id="bankSavingsDeposit">🔒 сбережения</button><button class="btn btn-outline" id="bankSavingsWithdraw">🔓 снять сбережения</button></div>`;
+    $('bankClicker').addEventListener('click', async function(e) { const r = await req('POST', '/bank/click', { username: currentUser.username }); if (!r.error) { $('bankBalance').textContent = r.balance.toLocaleString() + ' 🪙'; } });
     $('bankUpgrade').addEventListener('click', async () => { const r = await req('POST', '/bank/upgrade', { username: currentUser.username }); if (!r.error) loadBank(); else alert(r.error); });
     $('bankPassive').addEventListener('click', async () => { const r = await req('POST', '/bank/passive', { username: currentUser.username }); if (!r.error) loadBank(); else alert(r.error); });
     $('bankDeposit').addEventListener('click', () => { $('depositAmount').value = ''; $('depositModal').classList.add('open'); });
@@ -444,8 +449,28 @@ $('cancelTransferBtn').addEventListener('click', () => $('bankTransferModal').cl
 // ПРОФИЛЬ
 async function loadProfile() { const bank = await req('GET', '/bank/' + currentUser.username); const myPosts = allPostsCache.filter(p => p.username === currentUser.username); const subs = await req('GET', '/subs/' + currentUser.username); const followers = allUsersCache.filter(u => subs.includes(u.username)).length; const verified = isVerified(currentUser.username); $('profileContent').innerHTML = `<div class="profile-header"><div class="profile-avatar" id="profileAvatarMain">${(currentUser.avatar?`<img src="${currentUser.avatar}">`:currentUser.name[0])}</div><div class="profile-info"><div class="profile-name">${esc(currentUser.name)}${verified?'<span class="verified-badge" style="width:20px;height:20px;font-size:0.8rem;line-height:20px;">✓</span>':''}</div><div class="profile-username">@${esc(currentUser.username)}</div></div></div><div class="profile-stats"><div class="stat-item"><div class="stat-number">${myPosts.length}</div><div class="stat-label">постов</div></div><div class="stat-item" id="statSubs"><div class="stat-number">${subs.length}</div><div class="stat-label">подписок</div></div><div class="stat-item" id="statFollowers"><div class="stat-number">${followers}</div><div class="stat-label">подписчиков</div></div><div class="stat-item"><div class="stat-number">${bank.balance.toLocaleString()}</div><div class="stat-label">🪙</div></div></div><div style="display:flex;gap:10px;margin:16px 0;"><button class="btn btn-primary" id="profileEditBtn">✏️ редактировать</button><button class="btn btn-outline" id="profileSettingsBtn">⚙️ настройки</button></div><h4 style="color:var(--primary-light);margin:16px 0;">мои посты</h4><div id="myPostsList"></div>`; const c = $('myPostsList'); if (!myPosts.length) c.innerHTML = '<div style="text-align:center;padding:20px;">нет постов</div>'; else myPosts.forEach(p => renderPost(p, c, true)); $('profileEditBtn').addEventListener('click', openEditProfile); $('profileSettingsBtn').addEventListener('click', () => switchPage('settings')); $('statSubs').addEventListener('click', () => showUserList('подписки', subs.map(u => allUsersCache.find(x => x.username === u) || { username: u, name: u }))); $('statFollowers').addEventListener('click', () => showUserList('подписчики', allUsersCache.filter(u => subs.includes(u.username)))); }
 
-// КОНТАКТ
-async function openContact(username) { if (username === currentUser.username) { switchPage('profile'); return; } const user = allUsersCache.find(u => u.username === username); if (!user) { alert('пользователь не найден'); return; } const subs = await req('GET', '/subs/' + currentUser.username); const isSub = subs.includes(username); const verified = isVerified(username); switchPage('contact'); $('contactContent').innerHTML = `<div class="profile-header"><div class="profile-avatar">${user.avatar?`<img src="${user.avatar}">`:user.name[0]}</div><div class="profile-info"><div class="profile-name">${esc(user.name)}${verified?'<span class="verified-badge" style="width:20px;height:20px;font-size:0.8rem;line-height:20px;">✓</span>':''}</div><div class="profile-username">@${esc(username)}</div></div></div><div style="display:flex;gap:10px;margin:16px 0;"><button class="btn btn-primary" id="contactChatBtn">💬 написать</button><button class="btn btn-outline" id="contactSubBtn">${isSub?'✅ подписан':'➕ подписаться'}</button>${currentUser.username === 'snzhk' ? `<button class="btn btn-outline" id="contactVerifyBtn" style="color:var(--gold);border-color:var(--gold);">${verified ? '✅ убрать галочку' : '☑️ выдать галочку'}</button>` : ''}<button class="btn btn-outline" id="contactBackBtn">← назад</button></div>`; $('contactChatBtn').addEventListener('click', () => openChat(username)); $('contactSubBtn').addEventListener('click', async () => { const r = await req('POST', '/subs/toggle', { subscriber: currentUser.username, target: username }); $('contactSubBtn').textContent = r.subscribed ? '✅ подписан' : '➕ подписаться'; }); const verifyBtn = $('contactVerifyBtn'); if (verifyBtn) verifyBtn.addEventListener('click', async () => { const r = await req('POST', '/verify/toggle', { by: currentUser.username, target: username }); if (!r.error) { await initApp(); openContact(username); } }); $('contactBackBtn').addEventListener('click', () => switchPage('feed')); }
+// КОНТАКТ (ИСПРАВЛЕНО)
+async function openContact(username) {
+    if (!username) return;
+    if (username === currentUser.username) { switchPage('profile'); return; }
+    // Ищем пользователя в кэше
+    let user = allUsersCache.find(u => u.username === username);
+    // Если нет в кэше, запрашиваем с сервера
+    if (!user) {
+        const r = await req('GET', '/users/' + username);
+        if (!r.error) user = r;
+    }
+    if (!user) { alert('пользователь не найден'); return; }
+    const subs = await req('GET', '/subs/' + currentUser.username);
+    const isSub = subs.includes(username);
+    const verified = isVerified(username);
+    switchPage('contact');
+    $('contactContent').innerHTML = `<div class="profile-header"><div class="profile-avatar">${user.avatar?`<img src="${user.avatar}">`:user.name[0]}</div><div class="profile-info"><div class="profile-name">${esc(user.name)}${verified?'<span class="verified-badge" style="width:20px;height:20px;font-size:0.8rem;line-height:20px;">✓</span>':''}</div><div class="profile-username">@${esc(username)}</div></div></div><div style="display:flex;gap:10px;margin:16px 0;"><button class="btn btn-primary" id="contactChatBtn">💬 написать</button><button class="btn btn-outline" id="contactSubBtn">${isSub?'✅ подписан':'➕ подписаться'}</button>${currentUser.username === 'snzhk' ? `<button class="btn btn-outline" id="contactVerifyBtn" style="color:var(--gold);border-color:var(--gold);">${verified ? '✅ убрать галочку' : '☑️ выдать галочку'}</button>` : ''}<button class="btn btn-outline" id="contactBackBtn">← назад</button></div>`;
+    $('contactChatBtn').addEventListener('click', () => openChat(username));
+    $('contactSubBtn').addEventListener('click', async () => { const r = await req('POST', '/subs/toggle', { subscriber: currentUser.username, target: username }); $('contactSubBtn').textContent = r.subscribed ? '✅ подписан' : '➕ подписаться'; });
+    const verifyBtn = $('contactVerifyBtn'); if (verifyBtn) verifyBtn.addEventListener('click', async () => { const r = await req('POST', '/verify/toggle', { by: currentUser.username, target: username }); if (!r.error) { await initApp(); openContact(username); } });
+    $('contactBackBtn').addEventListener('click', () => switchPage('feed'));
+}
 
 // РЕДАКТИРОВАНИЕ ПРОФИЛЯ
 function openEditProfile() { $('editNameInput').value = currentUser.name; $('editBioInput').value = currentUser.bio || ''; const av = $('editAvatarPreview'); if (currentUser.avatar) av.innerHTML = `<img src="${currentUser.avatar}" style="width:100%;height:100%;object-fit:cover;">`; else av.textContent = currentUser.name[0]; let avatarData = null; $('changeAvatarBtn').onclick = () => $('avatarInput').click(); $('avatarInput').onchange = () => { const f = $('avatarInput').files[0]; if (!f) return; const r = new FileReader(); r.onload = e => { avatarData = e.target.result; av.innerHTML = `<img src="${avatarData}" style="width:100%;height:100%;object-fit:cover;">`; }; r.readAsDataURL(f); }; $('saveEditBtn').onclick = async () => { const name = $('editNameInput').value.trim() || currentUser.name; const bio = $('editBioInput').value.trim(); const r = await req('POST', '/profile/update', { username: currentUser.username, name, bio, avatar: avatarData }); if (!r.error) { currentUser = r.user; currentUser.username = currentUser.username; localStorage.setItem('zocial_session', JSON.stringify(currentUser)); $('editProfileModal').classList.remove('open'); switchPage('profile'); loadProfile(); } }; $('cancelEditBtn').onclick = () => $('editProfileModal').classList.remove('open'); $('editProfileModal').classList.add('open'); }
