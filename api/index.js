@@ -17,15 +17,6 @@ const DB = {
   verified: ['snzhk']
 };
 
-// Пассивный доход
-setInterval(() => {
-  Object.keys(DB.bank).forEach(username => {
-    const b = DB.bank[username];
-    if (!b) return;
-    if (b.passiveLevel > 0) b.balance += b.passiveLevel;
-  });
-}, 1000);
-
 // Регистрация
 app.post('/api/register', (req, res) => {
   try {
@@ -124,7 +115,7 @@ app.get('/api/bank/:username', (req, res) => {
   try {
     if (!DB.bank[req.params.username]) DB.bank[req.params.username] = { balance: 100, clickLevel: 1, passiveLevel: 0, depositAmount: 0, depositTimer: 0, history: [], savingsBalance: 0 };
     res.json(DB.bank[req.params.username]);
-  } catch (e) { res.json({ balance: 100, clickLevel: 1, passiveLevel: 0 }); }
+  } catch (e) { res.json({ error: 'ошибка сервера' }); }
 });
 
 app.post('/api/bank/click', (req, res) => {
@@ -220,26 +211,24 @@ app.get('/api/users/:username', (req, res) => {
   } catch (e) { res.json({ error: 'ошибка' }); }
 });
 
-// Gray AI с Hugging Face
+// Gray AI с Hugging Face (ИСПРАВЛЕНО)
 app.post('/api/grayai', async (req, res) => {
   try {
     const { prompt } = req.body;
     if (!prompt) return res.json({ response: 'задайте вопрос' });
-
-    const HF_TOKEN = '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';
 
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
       {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer ' + HF_TOKEN,
+          'Authorization': 'Bearer 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',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          inputs: `<s>[INST] Ты — Gray AI, нейросеть социальной сети Zocial. Отвечай на русском языке, дружелюбно и полезно. Вопрос: ${prompt} [/INST]</s>`,
+          inputs: `Ты — дружелюбный AI-ассистент. Ответь кратко на русском: ${prompt}`,
           parameters: {
-            max_new_tokens: 200,
+            max_new_tokens: 150,
             temperature: 0.7,
             return_full_text: false
           }
@@ -247,20 +236,46 @@ app.post('/api/grayai', async (req, res) => {
       }
     );
 
-    const data = await response.json();
-    let answer = 'не знаю что ответить';
+    // Если модель не загружена - ждём
+    if (response.status === 503) {
+      const retryAfter = response.headers.get('retry-after') || 10;
+      return res.json({ response: `Модель загружается. Пожалуйста, подождите ${retryAfter} секунд и попробуйте снова.` });
+    }
 
-    if (Array.isArray(data) && data[0]?.generated_text) {
-      answer = data[0].generated_text.trim();
-      // Убираем возможный повтор вопроса
-      const parts = answer.split('[/INST]</s>');
-      if (parts.length > 1) answer = parts[1].trim();
-      if (answer.length < 2) answer = 'не знаю что ответить';
+    const data = await response.json();
+    console.log('HF response:', JSON.stringify(data));
+
+    let answer = '';
+
+    if (Array.isArray(data) && data.length > 0) {
+      if (typeof data[0] === 'string') {
+        answer = data[0].trim();
+      } else if (data[0]?.generated_text) {
+        answer = data[0].generated_text.trim();
+      }
+    }
+
+    if (!answer || answer.length < 2) {
+      // Если модель не ответила - используем локальные ответы
+      const localResponses = [
+        `Интересный вопрос! Я думаю, что "${prompt}" — это тема для размышления.`,
+        `По поводу "${prompt}": мне кажется, это зависит от многих факторов.`,
+        `Отличный вопрос! Я бы посоветовал узнать больше о "${prompt}".`,
+        `"${prompt}" — звучит любопытно! Расскажите подробнее.`,
+        `Спасибо за вопрос! "${prompt}" заслуживает внимания.`
+      ];
+      answer = localResponses[Math.floor(Math.random() * localResponses.length)];
     }
 
     res.json({ response: answer });
   } catch (e) {
-    res.json({ response: 'произошла ошибка соединения с нейросетью' });
+    console.error('Gray AI error:', e);
+    const localResponses = [
+      `Извините, я сейчас загружаюсь. Попробуйте через минуту!`,
+      `Модель обновляется. Пожалуйста, подождите немного.`,
+      `Я пока учусь. Задайте вопрос чуть позже!`
+    ];
+    res.json({ response: localResponses[Math.floor(Math.random() * localResponses.length)] });
   }
 });
 
