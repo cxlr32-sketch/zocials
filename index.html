@@ -273,7 +273,8 @@ async function login() {
     const r = await req('POST', '/login', { username: u, password: p });
     if (r.error) { $('loginError').textContent = r.error; return; }
     currentUser = r.user; currentUser.username = u;
-    localStorage.setItem('zocial_session', JSON.stringify(currentUser)); showApp();
+    localStorage.setItem('zocial_session', JSON.stringify(currentUser));
+    showApp();
 }
 async function register() {
     const name = $('regName').value.trim(), username = $('regUsername').value.trim().toLowerCase(), password = $('regPassword').value.trim();
@@ -293,12 +294,12 @@ $('closeSearchPanel').addEventListener('click', () => $('searchPanel').classList
 let searchTimeout;
 $('searchInput').addEventListener('input', () => {
     clearTimeout(searchTimeout);
+    const q = $('searchInput').value.trim();
+    if (!q) { $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">введите запрос</div>'; return; }
     searchTimeout = setTimeout(async () => {
-        const q = $('searchInput').value.trim();
-        if (!q) { $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">введите запрос</div>'; return; }
         $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;">поиск...</div>';
         const results = await req('GET', '/users/search?q=' + encodeURIComponent(q));
-        if (!results || results.length === 0) { $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">ничего не найдено</div>'; return; }
+        if (!results || !Array.isArray(results) || results.length === 0) { $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">ничего не найдено</div>'; return; }
         $('searchResults').innerHTML = results.map(u => `<div class="search-result-item" data-u="${u.username}"><div class="post-avatar" style="width:44px;height:44px;font-size:0.9rem;">${u.avatar ? `<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : (u.name||u.username)[0].toUpperCase()}</div><div style="flex:1;"><div style="font-weight:600;">${esc(u.name)}${isVerified(u.username)?' <span class="verified-badge">✓</span>':''}</div><div style="color:var(--primary-light);font-size:0.85rem;">@${esc(u.username)}</div></div></div>`).join('');
         $('searchResults').querySelectorAll('.search-result-item').forEach(el => el.addEventListener('click', () => { $('searchPanel').classList.remove('open'); openContact(el.dataset.u); }));
     }, 300);
@@ -370,17 +371,7 @@ $('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendMsg
 async function loadBank() {
     const bank = await req('GET', '/bank/' + currentUser.username);
     if (bank.error) return;
-    $('bankContent').innerHTML = `
-        <div class="bank-balance-card"><div style="color:#93c5fd;">баланс</div><div class="bank-amount" id="bankBalance">${bank.balance.toLocaleString()} 🪙</div><div style="color:#94a3b8;">кликер: +${bank.clickLevel} | пассив: +${bank.passiveLevel}/сек</div>${bank.depositAmount > 0 ? `<div style="color:#93c5fd;">вклад: ${bank.depositAmount.toLocaleString()} 🪙</div>` : ''}${bank.savingsBalance > 0 ? `<div style="color:#10b981;">сбережения: ${bank.savingsBalance.toLocaleString()} 🪙</div>` : ''}</div>
-        <div class="bank-clicker" id="bankClicker"><div style="font-size:3rem;">🪙</div><div>+${bank.clickLevel}</div></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;">
-            <button class="btn btn-outline" id="bankUpgrade">улучшить<br><small>${(bank.clickLevel*2*50).toLocaleString()} 🪙</small></button>
-            <button class="btn btn-outline" id="bankPassive">пассивный<br><small>${((bank.passiveLevel+1)*100).toLocaleString()} 🪙</small></button>
-            <button class="btn btn-outline" id="bankDeposit">🏦 вклад</button>
-            <button class="btn btn-outline" id="bankTransfer">💸 перевод</button>
-            <button class="btn btn-outline" id="bankSavingsDeposit">🔒 сбережения</button>
-            <button class="btn btn-outline" id="bankSavingsWithdraw">🔓 снять сбережения</button>
-        </div>`;
+    $('bankContent').innerHTML = `<div class="bank-balance-card"><div style="color:#93c5fd;">баланс</div><div class="bank-amount" id="bankBalance">${bank.balance.toLocaleString()} 🪙</div><div style="color:#94a3b8;">кликер: +${bank.clickLevel} | пассив: +${bank.passiveLevel}/сек</div>${bank.depositAmount > 0 ? `<div style="color:#93c5fd;">вклад: ${bank.depositAmount.toLocaleString()} 🪙</div>` : ''}${bank.savingsBalance > 0 ? `<div style="color:#10b981;">сбережения: ${bank.savingsBalance.toLocaleString()} 🪙</div>` : ''}</div><div class="bank-clicker" id="bankClicker"><div style="font-size:3rem;">🪙</div><div>+${bank.clickLevel}</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;"><button class="btn btn-outline" id="bankUpgrade">улучшить<br><small>${(bank.clickLevel*2*50).toLocaleString()} 🪙</small></button><button class="btn btn-outline" id="bankPassive">пассивный<br><small>${((bank.passiveLevel+1)*100).toLocaleString()} 🪙</small></button><button class="btn btn-outline" id="bankDeposit">🏦 вклад</button><button class="btn btn-outline" id="bankTransfer">💸 перевод</button><button class="btn btn-outline" id="bankSavingsDeposit">🔒 сбережения</button><button class="btn btn-outline" id="bankSavingsWithdraw">🔓 снять сбережения</button></div>`;
     $('bankClicker').addEventListener('click', async function(e) { const r = await req('POST', '/bank/click', { username: currentUser.username }); if (!r.error) { $('bankBalance').textContent = r.balance.toLocaleString() + ' 🪙'; const rect = this.getBoundingClientRect(); floatCoin(rect.left+rect.width/2-20, rect.top-20, bank.clickLevel); } });
     $('bankUpgrade').addEventListener('click', async () => { const r = await req('POST', '/bank/upgrade', { username: currentUser.username }); if (!r.error) loadBank(); else alert(r.error); });
     $('bankPassive').addEventListener('click', async () => { const r = await req('POST', '/bank/passive', { username: currentUser.username }); if (!r.error) loadBank(); else alert(r.error); });
@@ -411,24 +402,12 @@ $('closeUserListBtn').addEventListener('click', () => $('userListModal').classLi
 // НАСТРОЙКИ
 function loadSettings() {
     const isLight = document.body.classList.contains('theme-light');
-    $('settingsContent').innerHTML = `
-        <h3 style="color:var(--primary-light);margin-bottom:24px;">⚙️ настройки</h3>
-        <p style="color:var(--text-secondary);margin-bottom:8px;">тема оформления</p>
-        <div class="theme-switch" id="themeSwitch">
-            <div class="switch-slider ${isLight ? 'right' : ''}"></div>
-            <button class="switch-option ${!isLight ? 'active' : ''}" data-theme="dark">🌙 тёмная</button>
-            <button class="switch-option ${isLight ? 'active' : ''}" data-theme="light">☀️ светлая</button>
-        </div>
-        <div class="settings-item" id="setPrivacy"><span>🔒</span><span style="flex:1;">приватность</span><span style="color:var(--text-secondary);">открытый профиль</span></div>
-        <div class="settings-item" id="setBankInfo"><span>🏦</span><span style="flex:1;">о банке</span><span style="color:var(--text-secondary);">информация</span></div>
-        <div class="settings-item" id="setAbout"><span>ℹ️</span><span style="flex:1;">о приложении</span><span style="color:var(--text-secondary);">v6.0</span></div>
-        <div style="height:1px;background:var(--border);margin:12px 0;"></div>
-        <div class="settings-item" id="setLogout"><span>🚪</span><span style="color:var(--accent);">выйти из аккаунта</span></div>`;
-    document.querySelectorAll('#themeSwitch .switch-option').forEach(btn => { btn.addEventListener('click', function() { const theme = this.dataset.theme; document.querySelectorAll('#themeSwitch .switch-option').forEach(b => b.classList.remove('active')); this.classList.add('active'); document.querySelector('#themeSwitch .switch-slider').classList.toggle('right', theme === 'light'); document.body.classList.toggle('theme-light', theme === 'light'); localStorage.setItem('zc_theme', theme); }); });
+    $('settingsContent').innerHTML = `<h3 style="color:var(--primary-light);margin-bottom:24px;">⚙️ настройки</h3><p style="color:var(--text-secondary);margin-bottom:8px;">тема оформления</p><div class="theme-switch" id="themeSwitch"><div class="switch-slider ${isLight ? 'right' : ''}"></div><button class="switch-option ${!isLight ? 'active' : ''}" data-theme="dark">🌙 тёмная</button><button class="switch-option ${isLight ? 'active' : ''}" data-theme="light">☀️ светлая</button></div><div class="settings-item" id="setPrivacy"><span>🔒</span><span style="flex:1;">приватность</span><span style="color:var(--text-secondary);">открытый профиль</span></div><div class="settings-item" id="setBankInfo"><span>🏦</span><span style="flex:1;">о банке</span><span style="color:var(--text-secondary);">информация</span></div><div class="settings-item" id="setAbout"><span>ℹ️</span><span style="flex:1;">о приложении</span><span style="color:var(--text-secondary);">v6.1</span></div><div style="height:1px;background:var(--border);margin:12px 0;"></div><div class="settings-item" id="setLogout"><span>🚪</span><span style="color:var(--accent);">выйти из аккаунта</span></div>`;
+    document.querySelectorAll('#themeSwitch .switch-option').forEach(btn => btn.addEventListener('click', function() { const t = this.dataset.theme; document.querySelectorAll('#themeSwitch .switch-option').forEach(b => b.classList.remove('active')); this.classList.add('active'); document.querySelector('#themeSwitch .switch-slider').classList.toggle('right', t === 'light'); document.body.classList.toggle('theme-light', t === 'light'); localStorage.setItem('zc_theme', t); }));
     $('setPrivacy').addEventListener('click', () => alert('приватность: открытый профиль'));
-    $('setBankInfo').addEventListener('click', () => alert('🏦 Zima.Bank\n\n• Кликер: +монеты за клик\n• Улучшения кликера: стоимость ×2\n• Пассивный доход: +монеты/сек\n• Вклад: 2% каждые 30 секунд\n• Сбережения: защищённый счёт от 500 🪙\n• Переводы: мгновенные между пользователями'));
-    $('setAbout').addEventListener('click', () => alert('❄️ Zocial v6.0\n\nСоциальная сеть с банком, чатами и видео\n\n• Лента с постами и фото\n• Чаты в реальном времени\n• Zima.Bank с экономикой\n• Подписки и профили\n• Тёмная/светлая тема'));
-    $('setLogout').addEventListener('click', () => { if (confirm('выйти из аккаунта?')) { localStorage.removeItem('zocial_session'); location.reload(); } });
+    $('setBankInfo').addEventListener('click', () => alert('🏦 Zima.Bank\n\n• Кликер: +монеты за клик\n• Улучшения: x2 стоимость\n• Пассивный доход: +монеты/сек\n• Вклад: 2% каждые 30с\n• Сбережения: от 500 🪙\n• Переводы: мгновенные'));
+    $('setAbout').addEventListener('click', () => alert('❄️ Zocial v6.1\nСоциальная сеть с банком и чатами'));
+    $('setLogout').addEventListener('click', () => { if (confirm('выйти?')) { localStorage.removeItem('zocial_session'); location.reload(); } });
 }
 
 // ПЕРЕКЛЮЧАТЕЛЬ ВХОДА
@@ -438,7 +417,25 @@ $('regSubmitBtn').addEventListener('click', register);
 $('addContactBtn').addEventListener('click', () => { $('searchPanel').classList.add('open'); $('searchInput').value = ''; $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">введите запрос</div>'; setTimeout(() => $('searchInput').focus(), 300); });
 
 // АВТОВХОД
-(async () => { if (localStorage.getItem('zc_theme') === 'light') document.body.classList.add('theme-light'); const session = localStorage.getItem('zocial_session'); if (session) { try { const saved = JSON.parse(session); const r = await req('POST', '/login', { username: saved.username, password: '' }); if (r.error) throw new Error('no session'); currentUser = r.user; currentUser.username = saved.username; showApp(); } catch (e) { localStorage.removeItem('zocial_session'); $('loginScreen').classList.remove('hidden'); } } else { $('loginScreen').classList.remove('hidden'); } })();
+(async () => {
+    if (localStorage.getItem('zc_theme') === 'light') document.body.classList.add('theme-light');
+    const session = localStorage.getItem('zocial_session');
+    if (session) {
+        try {
+            const saved = JSON.parse(session);
+            const r = await req('POST', '/session', { username: saved.username });
+            if (r.error) { localStorage.removeItem('zocial_session'); $('loginScreen').classList.remove('hidden'); return; }
+            currentUser = r.user;
+            currentUser.username = saved.username;
+            showApp();
+        } catch (e) {
+            localStorage.removeItem('zocial_session');
+            $('loginScreen').classList.remove('hidden');
+        }
+    } else {
+        $('loginScreen').classList.remove('hidden');
+    }
+})();
 </script>
 </body>
 </html>
