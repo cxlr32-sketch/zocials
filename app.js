@@ -7,6 +7,7 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.static(path.join(__dirname)));
 
+// База данных
 const DB = {
   users: {},
   posts: [],
@@ -15,9 +16,6 @@ const DB = {
   subscriptions: {},
   verified: ['snzhk']
 };
-
-// Сохраняем посты каждые 30 секунд в памяти (они и так в памяти, просто для стабильности)
-let lastBackup = Date.now();
 
 // Пассивный доход + проценты по вкладам
 setInterval(() => {
