@@ -63,7 +63,7 @@ app.post('/api/login', (req, res) => {
   res.json({ success: true, user: { name: user.name, username, avatar: user.avatar, bio: user.bio } });
 });
 
-// Проверка сессии
+// Проверка сессии (чтобы аккаунт не слетал при обновлении)
 app.post('/api/session', (req, res) => {
   const { username } = req.body;
   const user = DB.users[username];
