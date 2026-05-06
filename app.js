@@ -48,7 +48,16 @@ app.post('/api/register', (req, res) => {
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   const user = DB.users[username];
-  if (!user || user.password !== password) return res.json({ error: 'неверные данные' });
+  if (!user) return res.json({ error: 'неверные данные' });
+  if (user.password !== password) return res.json({ error: 'неверные данные' });
+  res.json({ success: true, user: { name: user.name, username, avatar: user.avatar, bio: user.bio } });
+});
+
+// Проверка сессии
+app.post('/api/session', (req, res) => {
+  const { username } = req.body;
+  const user = DB.users[username];
+  if (!user) return res.json({ error: 'сессия недействительна' });
   res.json({ success: true, user: { name: user.name, username, avatar: user.avatar, bio: user.bio } });
 });
 
@@ -101,7 +110,6 @@ app.post('/api/posts/:id/edit', (req, res) => {
   post.media = req.body.media !== undefined ? req.body.media : post.media;
   post.mediaType = req.body.mediaType !== undefined ? req.body.mediaType : post.mediaType;
   post.edited = true;
-  post.editedTime = new Date().toLocaleTimeString();
   
   res.json({ success: true, post });
 });
@@ -143,29 +151,8 @@ app.post('/api/bank/upgrade', (req, res) => { const b = DB.bank[req.body.usernam
 app.post('/api/bank/passive', (req, res) => { const b = DB.bank[req.body.username]; const cost = (b.passiveLevel + 1) * 100; if (b.balance < cost) return res.json({ error: 'недостаточно средств' }); b.balance -= cost; b.passiveLevel++; b.history.push({ type: 'пассивный', amount: -cost, time: new Date().toLocaleTimeString() }); res.json({ balance: b.balance, passiveLevel: b.passiveLevel }); });
 app.post('/api/bank/deposit', (req, res) => { const b = DB.bank[req.body.username]; const amount = parseInt(req.body.amount); if (!amount || amount < 100) return res.json({ error: 'мин. 100 🪙' }); if (b.balance < amount) return res.json({ error: 'недостаточно средств' }); b.balance -= amount; b.depositAmount = amount; b.depositTimer = Date.now(); b.history.push({ type: 'вклад', amount: -amount, time: new Date().toLocaleTimeString() }); res.json({ success: true }); });
 app.post('/api/bank/withdraw', (req, res) => { const b = DB.bank[req.body.username]; if (!b.depositAmount) return res.json({ error: 'нет вклада' }); const amount = b.depositAmount; b.balance += amount; b.depositAmount = 0; b.depositTimer = 0; b.history.push({ type: 'снятие', amount, time: new Date().toLocaleTimeString() }); res.json({ success: true }); });
-
-// Сберегательный счёт
-app.post('/api/bank/savings/deposit', (req, res) => {
-  const b = DB.bank[req.body.username];
-  const amount = parseInt(req.body.amount);
-  if (!amount || amount < 500) return res.json({ error: 'мин. 500 🪙' });
-  if (b.balance < amount) return res.json({ error: 'недостаточно средств' });
-  b.balance -= amount;
-  b.savingsBalance = (b.savingsBalance || 0) + amount;
-  b.history.push({ type: 'сбережения', amount: -amount, time: new Date().toLocaleTimeString() });
-  res.json({ success: true, savingsBalance: b.savingsBalance });
-});
-
-app.post('/api/bank/savings/withdraw', (req, res) => {
-  const b = DB.bank[req.body.username];
-  if (!b.savingsBalance || b.savingsBalance <= 0) return res.json({ error: 'нет сбережений' });
-  const amount = b.savingsBalance;
-  b.balance += amount;
-  b.savingsBalance = 0;
-  b.history.push({ type: 'сбережения сняты', amount, time: new Date().toLocaleTimeString() });
-  res.json({ success: true, savingsBalance: 0 });
-});
-
+app.post('/api/bank/savings/deposit', (req, res) => { const b = DB.bank[req.body.username]; const amount = parseInt(req.body.amount); if (!amount || amount < 500) return res.json({ error: 'мин. 500 🪙' }); if (b.balance < amount) return res.json({ error: 'недостаточно средств' }); b.balance -= amount; b.savingsBalance = (b.savingsBalance || 0) + amount; b.history.push({ type: 'сбережения', amount: -amount, time: new Date().toLocaleTimeString() }); res.json({ success: true, savingsBalance: b.savingsBalance }); });
+app.post('/api/bank/savings/withdraw', (req, res) => { const b = DB.bank[req.body.username]; if (!b.savingsBalance || b.savingsBalance <= 0) return res.json({ error: 'нет сбережений' }); const amount = b.savingsBalance; b.balance += amount; b.savingsBalance = 0; b.history.push({ type: 'сбережения сняты', amount, time: new Date().toLocaleTimeString() }); res.json({ success: true, savingsBalance: 0 }); });
 app.post('/api/bank/transfer', (req, res) => { const { from, to, amount } = req.body; const s = DB.bank[from], r = DB.bank[to]; if (!s || !r) return res.json({ error: 'пользователь не найден' }); if (s.balance < amount) return res.json({ error: 'недостаточно средств' }); s.balance -= amount; r.balance += amount; s.history.push({ type: 'перевод', amount: -amount, time: new Date().toLocaleTimeString() }); r.history.push({ type: 'получено', amount, time: new Date().toLocaleTimeString() }); if (!DB.chats[to]) DB.chats[to] = {}; if (!DB.chats[from]) DB.chats[from] = {}; const msg = { from, text: `💰 перевёл ${amount} 🪙`, time: new Date().toLocaleTimeString() }; if (!DB.chats[to][from]) DB.chats[to][from] = []; if (!DB.chats[from][to]) DB.chats[from][to] = []; DB.chats[to][from].push(msg); DB.chats[from][to].push(msg); res.json({ success: true }); });
 
 // Чаты
@@ -178,7 +165,7 @@ app.post('/api/subs/toggle', (req, res) => { const { subscriber, target } = req.
 
 // Пользователи
 app.get('/api/users', (req, res) => res.json(Object.keys(DB.users).map(u => ({ username: u, name: DB.users[u].name, avatar: DB.users[u].avatar }))));
-app.get('/api/users/search', (req, res) => { const q = (req.query.q || '').toLowerCase(); if (!q) return res.json([]); const results = Object.keys(DB.users).filter(u => u.includes(q) || DB.users[u].name.toLowerCase().includes(q)).slice(0, 10).map(u => ({ username: u, name: DB.users[u].name, avatar: DB.users[u].avatar })); res.json(results); });
+app.get('/api/users/search', (req, res) => { const q = (req.query.q || '').toLowerCase().trim(); if (!q) return res.json([]); const results = Object.keys(DB.users).filter(u => u.toLowerCase().includes(q) || (DB.users[u].name || '').toLowerCase().includes(q)).slice(0, 10).map(u => ({ username: u, name: DB.users[u].name, avatar: DB.users[u].avatar })); res.json(results); });
 app.get('/api/users/:username', (req, res) => { const u = DB.users[req.params.username]; if (!u) return res.json({ error: 'не найден' }); res.json({ username: req.params.username, name: u.name, avatar: u.avatar, bio: u.bio }); });
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
