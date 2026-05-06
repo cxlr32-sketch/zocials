@@ -13,7 +13,7 @@ const supabaseUrl = 'https://zrfadvncmqpmwawgnaxb.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyZmFkdm5jbXFwbXdhd2duYXhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwODIyMjcsImV4cCI6MjA5MzY1ODIyN30.kOeym7x6HUFRpcX694SxIq48b5AZ0hetzfYZ8d5P2NI';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Регистрация
+// ============ АВТОРИЗАЦИЯ ============
 app.post('/api/register', async (req, res) => {
   try {
     const { name, username, password } = req.body;
@@ -21,11 +21,11 @@ app.post('/api/register', async (req, res) => {
     if (username.length < 3) return res.json({ error: 'никнейм мин. 3 символа' });
     if (password.length < 4) return res.json({ error: 'пароль мин. 4 символа' });
 
-    const { data: exists } = await supabase.from('users').select('username').eq('username', username).single();
+    const { data: exists } = await supabase.from('users').select('username').eq('username', username).maybeSingle();
     if (exists) return res.json({ error: 'никнейм занят' });
 
     await supabase.from('users').insert({ username, name, password });
-    await supabase.from('bank').insert({ username });
+    await supabase.from('bank').insert({ username, balance: 100, click_level: 1, passive_level: 0 });
 
     res.json({ success: true, user: { name, username } });
   } catch (e) {
@@ -33,11 +33,10 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// Вход
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    const { data: user } = await supabase.from('users').select('*').eq('username', username).single();
+    const { data: user } = await supabase.from('users').select('*').eq('username', username).maybeSingle();
     if (!user || user.password !== password) return res.json({ error: 'неверные данные' });
     res.json({ success: true, user: { name: user.name, username, avatar: user.avatar, bio: user.bio } });
   } catch (e) {
@@ -45,11 +44,10 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Сессия
 app.post('/api/session', async (req, res) => {
   try {
     const { username } = req.body;
-    const { data: user } = await supabase.from('users').select('*').eq('username', username).single();
+    const { data: user } = await supabase.from('users').select('*').eq('username', username).maybeSingle();
     if (!user) return res.json({ error: 'сессия недействительна' });
     res.json({ success: true, user: { name: user.name, username, avatar: user.avatar, bio: user.bio } });
   } catch (e) {
@@ -57,7 +55,7 @@ app.post('/api/session', async (req, res) => {
   }
 });
 
-// Обновление профиля
+// ============ ПРОФИЛЬ ============
 app.post('/api/profile/update', async (req, res) => {
   try {
     const { username, name, bio, avatar } = req.body;
@@ -66,49 +64,53 @@ app.post('/api/profile/update', async (req, res) => {
     if (bio !== undefined) updates.bio = bio;
     if (avatar) updates.avatar = avatar;
     
-    const { data: user, error } = await supabase.from('users').update(updates).eq('username', username).select().single();
-    if (error) return res.json({ error: 'не найден' });
+    const { data: user } = await supabase.from('users').update(updates).eq('username', username).select().maybeSingle();
+    if (!user) return res.json({ error: 'не найден' });
     res.json({ success: true, user: { name: user.name, username, avatar: user.avatar, bio: user.bio } });
   } catch (e) {
     res.json({ error: 'ошибка' });
   }
 });
 
-// Посты
+// ============ ПОСТЫ ============
+app.get('/api/posts', async (req, res) => {
+  try {
+    const { data } = await supabase.from('posts').select('*').order('timestamp', { ascending: false }).limit(100);
+    res.json(data || []);
+  } catch (e) { res.json([]); }
+});
+
 app.post('/api/posts', async (req, res) => {
   try {
     const { username, text, media, mediaType } = req.body;
     if (!text && !media) return res.json({ error: 'пустой пост' });
+    
     const post = { 
       id: 'p' + Date.now(), 
       username, 
       text: text || '', 
       media: media || null, 
       media_type: mediaType || null,
-      timestamp: Date.now() 
+      time: 'только что',
+      timestamp: Date.now(),
+      likes: 0,
+      liked_by: [],
+      comments: []
     };
-    await supabase.from('posts').insert(post);
+    
+    const { error } = await supabase.from('posts').insert(post);
+    if (error) return res.json({ error: 'ошибка базы данных' });
+    
     res.json({ success: true, post });
   } catch (e) { 
-    console.error('Post error:', e);
-    res.json({ error: 'ошибка: ' + e.message }); 
+    res.json({ error: 'ошибка сервера' }); 
   }
-});
-
-app.post('/api/posts', async (req, res) => {
-  try {
-    const { username, text } = req.body;
-    if (!text) return res.json({ error: 'пустой пост' });
-    const post = { id: 'p' + Date.now(), username, text, timestamp: Date.now() };
-    await supabase.from('posts').insert(post);
-    res.json({ success: true, post });
-  } catch (e) { res.json({ error: 'ошибка' }); }
 });
 
 app.post('/api/posts/:id/like', async (req, res) => {
   try {
     const { username } = req.body;
-    const { data: post } = await supabase.from('posts').select('*').eq('id', req.params.id).single();
+    const { data: post } = await supabase.from('posts').select('liked_by').eq('id', req.params.id).maybeSingle();
     if (!post) return res.json({ error: 'не найден' });
     
     let likedBy = post.liked_by || [];
@@ -122,7 +124,7 @@ app.post('/api/posts/:id/like', async (req, res) => {
 app.post('/api/posts/:id/comment', async (req, res) => {
   try {
     const { username, text } = req.body;
-    const { data: post } = await supabase.from('posts').select('comments').eq('id', req.params.id).single();
+    const { data: post } = await supabase.from('posts').select('comments').eq('id', req.params.id).maybeSingle();
     if (!post) return res.json({ error: 'не найден' });
     
     const comments = post.comments || [];
@@ -139,86 +141,106 @@ app.delete('/api/posts/:id', async (req, res) => {
   } catch (e) { res.json({ error: 'ошибка' }); }
 });
 
-// Банк
+// ============ БАНК ============
+async function getBank(username) {
+  const { data } = await supabase.from('bank').select('*').eq('username', username).maybeSingle();
+  if (!data) {
+    const newAccount = { username, balance: 100, click_level: 1, passive_level: 0, deposit_amount: 0, deposit_timer: 0, history: [], savings_balance: 0 };
+    await supabase.from('bank').insert(newAccount);
+    return newAccount;
+  }
+  return data;
+}
+
 app.get('/api/bank/:username', async (req, res) => {
   try {
-    const { data } = await supabase.from('bank').select('*').eq('username', req.params.username).single();
-    if (!data) {
-      await supabase.from('bank').insert({ username: req.params.username });
-      return res.json({ balance: 100, click_level: 1, passive_level: 0 });
-    }
-    res.json(data);
-  } catch (e) { res.json({ error: 'ошибка' }); }
+    const bank = await getBank(req.params.username);
+    res.json(bank);
+  } catch (e) {
+    res.json({ balance: 100, click_level: 1, passive_level: 0 });
+  }
 });
 
 app.post('/api/bank/click', async (req, res) => {
   try {
     const { username } = req.body;
-    const { data: bank } = await supabase.from('bank').select('*').eq('username', username).single();
-    if (!bank) return res.json({ error: 'нет счёта' });
+    const bank = await getBank(username);
     const newBalance = bank.balance + bank.click_level;
     await supabase.from('bank').update({ balance: newBalance }).eq('username', username);
     res.json({ balance: newBalance });
-  } catch (e) { res.json({ error: 'ошибка' }); }
+  } catch (e) {
+    res.json({ balance: 100 });
+  }
 });
 
 app.post('/api/bank/upgrade', async (req, res) => {
   try {
     const { username } = req.body;
-    const { data: bank } = await supabase.from('bank').select('*').eq('username', username).single();
+    const bank = await getBank(username);
     const cost = bank.click_level * 2 * 50;
     if (bank.balance < cost) return res.json({ error: 'недостаточно средств' });
+    
     const newBalance = bank.balance - cost;
     const newLevel = bank.click_level + 1;
     await supabase.from('bank').update({ balance: newBalance, click_level: newLevel }).eq('username', username);
     res.json({ balance: newBalance, clickLevel: newLevel });
-  } catch (e) { res.json({ error: 'ошибка' }); }
+  } catch (e) {
+    res.json({ error: 'ошибка' });
+  }
 });
 
 app.post('/api/bank/passive', async (req, res) => {
   try {
     const { username } = req.body;
-    const { data: bank } = await supabase.from('bank').select('*').eq('username', username).single();
+    const bank = await getBank(username);
     const cost = (bank.passive_level + 1) * 100;
     if (bank.balance < cost) return res.json({ error: 'недостаточно средств' });
+    
     const newBalance = bank.balance - cost;
     const newLevel = bank.passive_level + 1;
     await supabase.from('bank').update({ balance: newBalance, passive_level: newLevel }).eq('username', username);
     res.json({ balance: newBalance, passiveLevel: newLevel });
-  } catch (e) { res.json({ error: 'ошибка' }); }
+  } catch (e) {
+    res.json({ error: 'ошибка' });
+  }
 });
 
 app.post('/api/bank/transfer', async (req, res) => {
   try {
     const { from, to, amount } = req.body;
-    const { data: s } = await supabase.from('bank').select('*').eq('username', from).single();
-    const { data: r } = await supabase.from('bank').select('*').eq('username', to).single();
-    if (!s || !r) return res.json({ error: 'пользователь не найден' });
-    if (s.balance < amount) return res.json({ error: 'недостаточно средств' });
+    const amt = parseInt(amount);
+    if (!amt || amt < 1) return res.json({ error: 'неверная сумма' });
     
-    await supabase.from('bank').update({ balance: s.balance - amount }).eq('username', from);
-    await supabase.from('bank').update({ balance: r.balance + amount }).eq('username', to);
+    const sender = await getBank(from);
+    const receiver = await getBank(to);
     
-    await supabase.from('chats').insert({ from_user: from, to_user: to, text: `💰 перевёл ${amount} 🪙`, time: new Date().toLocaleTimeString() });
+    if (sender.balance < amt) return res.json({ error: 'недостаточно средств' });
+    
+    await supabase.from('bank').update({ balance: sender.balance - amt }).eq('username', from);
+    await supabase.from('bank').update({ balance: receiver.balance + amt }).eq('username', to);
+    
+    await supabase.from('chats').insert({ 
+      from_user: from, to_user: to, 
+      text: `💰 перевёл ${amt} 🪙`, 
+      time: new Date().toLocaleTimeString() 
+    });
     
     res.json({ success: true });
-  } catch (e) { res.json({ error: 'ошибка' }); }
+  } catch (e) {
+    res.json({ error: 'ошибка' });
+  }
 });
 
-// Чаты
+// ============ ЧАТЫ ============
 app.get('/api/chat/:username', async (req, res) => {
   try {
-    const { data: sent } = await supabase.from('chats').select('*').eq('from_user', req.params.username);
-    const { data: received } = await supabase.from('chats').select('*').eq('to_user', req.params.username);
-    const all = [...(sent || []), ...(received || [])];
-    
+    const { data } = await supabase.from('chats').select('*').or(`from_user.eq.${req.params.username},to_user.eq.${req.params.username}`);
     const chats = {};
-    all.forEach(msg => {
+    (data || []).forEach(msg => {
       const other = msg.from_user === req.params.username ? msg.to_user : msg.from_user;
       if (!chats[other]) chats[other] = [];
       chats[other].push({ from: msg.from_user, text: msg.text, time: msg.time });
     });
-    
     res.json(chats);
   } catch (e) { res.json({}); }
 });
@@ -231,19 +253,16 @@ app.post('/api/chat/send', async (req, res) => {
   } catch (e) { res.json({ error: 'ошибка' }); }
 });
 
-// Подписки
+// ============ ПОДПИСКИ ============
 app.get('/api/subs/:username', async (req, res) => {
-  try {
-    const { data } = await supabase.from('subscriptions').select('target').eq('subscriber', req.params.username);
-    res.json((data || []).map(d => d.target));
-  } catch (e) { res.json([]); }
+  const { data } = await supabase.from('subscriptions').select('target').eq('subscriber', req.params.username);
+  res.json((data || []).map(d => d.target));
 });
 
 app.post('/api/subs/toggle', async (req, res) => {
   try {
     const { subscriber, target } = req.body;
-    const { data: existing } = await supabase.from('subscriptions').select('*').eq('subscriber', subscriber).eq('target', target).single();
-    
+    const { data: existing } = await supabase.from('subscriptions').select('*').eq('subscriber', subscriber).eq('target', target).maybeSingle();
     if (existing) {
       await supabase.from('subscriptions').delete().eq('subscriber', subscriber).eq('target', target);
       res.json({ subscribed: false });
@@ -254,12 +273,10 @@ app.post('/api/subs/toggle', async (req, res) => {
   } catch (e) { res.json({ error: 'ошибка' }); }
 });
 
-// Пользователи
+// ============ ПОЛЬЗОВАТЕЛИ ============
 app.get('/api/users', async (req, res) => {
-  try {
-    const { data } = await supabase.from('users').select('username, name, avatar');
-    res.json(data || []);
-  } catch (e) { res.json([]); }
+  const { data } = await supabase.from('users').select('username, name, avatar');
+  res.json(data || []);
 });
 
 app.get('/api/users/search', async (req, res) => {
@@ -273,52 +290,23 @@ app.get('/api/users/search', async (req, res) => {
 
 app.get('/api/users/:username', async (req, res) => {
   try {
-    const { data } = await supabase.from('users').select('*').eq('username', req.params.username).single();
+    const { data } = await supabase.from('users').select('*').eq('username', req.params.username).maybeSingle();
     if (!data) return res.json({ error: 'не найден' });
-    res.json({ username: data.username, name: data.name, avatar: data.avatar, bio: data.bio });
+    res.json(data);
   } catch (e) { res.json({ error: 'ошибка' }); }
 });
 
-// Верификация
-app.post('/api/verify/toggle', async (req, res) => {
-  try {
-    const { by, target } = req.body;
-    if (by !== 'snzhk') return res.json({ error: 'нет прав' });
-    const { data } = await supabase.from('verified').select('*').eq('username', target).single();
-    if (data) {
-      await supabase.from('verified').delete().eq('username', target);
-      res.json({ verified: false });
-    } else {
-      await supabase.from('verified').insert({ username: target });
-      res.json({ verified: true });
-    }
-  } catch (e) { res.json({ error: 'ошибка' }); }
-});
-
-app.get('/api/verified', async (req, res) => {
-  try {
-    const { data } = await supabase.from('verified').select('username');
-    res.json((data || []).map(d => d.username));
-  } catch (e) { res.json([]); }
-});
-
-// Gray AI
+// ============ GRAY AI ============
 app.post('/api/grayai', async (req, res) => {
-  try {
-    const { prompt } = req.body;
-    if (!prompt) return res.json({ response: 'задайте вопрос' });
-    
-    const responses = [
-      `Интересный вопрос! "${prompt}" — это тема для размышления.`,
-      `По поводу "${prompt}": мне кажется, это зависит от многих факторов.`,
-      `Отличный вопрос! Я бы посоветовал узнать больше о "${prompt}".`
-    ];
-    res.json({ response: responses[Math.floor(Math.random() * responses.length)] });
-  } catch (e) {
-    res.json({ response: 'ошибка' });
-  }
+  const responses = [
+    `Интересный вопрос! "${req.body.prompt}" — это тема для размышления.`,
+    `По поводу "${req.body.prompt}": мне кажется, это зависит от многих факторов.`,
+    `Отличный вопрос! Я бы посоветовал узнать больше.`
+  ];
+  res.json({ response: responses[Math.floor(Math.random() * responses.length)] });
 });
 
+// ============ ГЛАВНАЯ ============
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'index.html')));
 
 module.exports = app;
