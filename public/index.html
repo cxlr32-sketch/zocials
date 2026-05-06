@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Zocial 0.1 (beta)</title>
+    <title>Zocial 0.2 (beta)</title>
     <style>
         :root {
             --primary: #2563eb; --primary-light: #60a5fa; --bg: #0a0a1a; --surface: #1a1a2e;
@@ -115,13 +115,6 @@
         .welcome-overlay { position:fixed; inset:0; background:var(--bg); z-index:600; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px; }
         .welcome-title { font-size:2rem; font-weight:800; color:var(--primary-light); animation:scaleIn 0.5s ease; }
         @keyframes scaleIn { from{opacity:0;transform:scale(0.5);} to{opacity:1;transform:scale(1);} }
-        .onboarding-slide { animation:slideIn 0.5s ease; }
-        @keyframes slideIn { from{opacity:0;transform:translateX(30px);} to{opacity:1;transform:translateX(0);} }
-        .onboarding-dots { display:flex; gap:8px; justify-content:center; margin:20px 0; }
-        .onboarding-dot { width:10px; height:10px; border-radius:50%; background:var(--surface2); transition:0.3s; cursor:pointer; }
-        .onboarding-dot.active { background:var(--primary); width:24px; border-radius:5px; }
-        .confetti { position:fixed; pointer-events:none; z-index:1000; font-size:1.5rem; animation:confettiFall 2.5s ease-out forwards; }
-        @keyframes confettiFall { 0%{opacity:1;transform:translateY(-100px) rotate(0deg);} 100%{opacity:0;transform:translateY(100vh) rotate(720deg);} }
         
         .search-panel { position:fixed; top:0; left:0; right:0; bottom:0; background:var(--bg); z-index:250; display:flex; flex-direction:column; max-width:430px; margin:0 auto; transform:translateY(-100%); transition:transform 0.3s ease; }
         .search-panel.open { transform:translateY(0); }
@@ -141,7 +134,7 @@
 <body>
 <div class="login-screen" id="loginScreen">
     <img src="https://imgfy.ru/ib/JGoGzQlCDIcONHE_1778078416.webp" class="login-logo-img" alt="Zocial">
-    <div class="login-version">версия 0.1 (beta) · zima.dev · © 2026</div>
+    <div class="login-version">версия 0.2 (beta) · zima.dev · © 2026</div>
     <div class="login-tabs" id="loginSwitch">
         <div class="login-tab-slider"></div>
         <button class="login-tab active" data-tab="login">вход</button>
@@ -167,7 +160,7 @@
         <div class="header">
             <div class="header-left">
                 <img src="https://imgfy.ru/ib/JGoGzQlCDIcONHE_1778078416.webp" class="header-logo-img" alt="Zocial">
-                <span class="logo-version">0.1 beta</span>
+                <span class="logo-version">0.2 beta</span>
             </div>
             <div class="header-actions"><button class="icon-btn" id="searchBtn">🔍</button></div>
         </div>
@@ -180,7 +173,7 @@
                 <div class="page" id="profilePage"><div id="profileContent"></div></div>
                 <div class="page" id="contactPage"><div id="contactContent"></div></div>
                 <div class="page" id="settingsPage"><div id="settingsContent"></div></div>
-                <div class="page" id="aboutPage"><div style="text-align:center;padding:40px 20px;"><img src="https://imgfy.ru/ib/JGoGzQlCDIcONHE_1778078416.webp" style="width:120px;height:120px;border-radius:25px;margin-bottom:16px;" alt="Zocial"><p style="color:var(--text-secondary);">версия 0.1 (beta)</p><p style="margin-top:20px;color:var(--text-secondary);">социальная сеть с банком, чатами и AI</p><p style="margin-top:8px;color:var(--primary-light);">© 2026 zima.dev</p><button class="btn btn-outline" id="aboutBackBtn" style="margin-top:24px;">← назад</button></div></div>
+                <div class="page" id="aboutPage"><div style="text-align:center;padding:40px 20px;"><img src="https://imgfy.ru/ib/JGoGzQlCDIcONHE_1778078416.webp" style="width:120px;height:120px;border-radius:25px;margin-bottom:16px;" alt="Zocial"><p style="color:var(--text-secondary);">версия 0.2 (beta)</p><p style="margin-top:20px;color:var(--text-secondary);">социальная сеть с банком, чатами и AI</p><p style="margin-top:8px;color:var(--primary-light);">© 2026 zima.dev</p><button class="btn btn-outline" id="aboutBackBtn" style="margin-top:24px;">← назад</button></div></div>
             </div>
         </div>
         <button class="fab hidden" id="fabCreatePost">＋</button>
@@ -222,7 +215,7 @@ async function apiReq(method, endpoint, body = null) {
 }
 
 let currentUser = null, globalChats = {}, activeChatId = null, activeCommentsPostId = null, currentPage = 'feed';
-let allPostsCache = [], editingPostId = null;
+let allPostsCache = [];
 let verifiedList = ['snzhk'], allUsersCache = [];
 
 function esc(t) { return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[c]); }
@@ -275,12 +268,19 @@ async function register() {
     localStorage.setItem('zocial_session', JSON.stringify(currentUser));
     $('loginScreen').classList.add('hidden');
     await initApp();
+    
     // Приветствие
     for (let i = 0; i < 30; i++) setTimeout(() => { const el = document.createElement('div'); el.className = 'confetti'; el.textContent = ['🎉','✨','❄️','🎊'][Math.floor(Math.random()*4)]; el.style.left = Math.random() * 100 + '%'; el.style.top = -(Math.random() * 100) + 'px'; document.body.appendChild(el); setTimeout(() => el.remove(), 2500); }, i * 30);
     const overlay = document.createElement('div'); overlay.className = 'welcome-overlay';
-    overlay.innerHTML = `<div class="welcome-title">🎉 добро пожаловать!</div><p style="color:var(--text-secondary);">@${currentUser.username}</p><button class="btn btn-primary" id="welcomeDone" style="margin-top:20px;">начать</button>`;
+    overlay.innerHTML = `<div class="welcome-title">🎉 добро пожаловать!</div><p style="color:var(--text-secondary);">@${currentUser.username}</p><button class="btn btn-primary" style="margin-top:20px;">начать</button>`;
+    overlay.querySelector('button').addEventListener('click', () => {
+        overlay.remove();
+        $('mainApp').classList.add('visible');
+        switchPage('feed');
+        loadFeed();
+        loadChats();
+    });
     document.body.appendChild(overlay);
-    $('welcomeDone').addEventListener('click', () => { overlay.remove(); $('mainApp').classList.add('visible'); switchPage('feed'); loadFeed(); loadChats(); });
 }
 
 // ЛЕНТА
@@ -298,7 +298,7 @@ function renderPost(post, container, showDelete = false) {
     card.querySelector('.post-avatar')?.addEventListener('click', () => openContact(post.username));
     card.querySelector('.post-user-info')?.addEventListener('click', () => openContact(post.username));
     container.appendChild(card);
-    if (showDelete && isOwner) card.querySelector('[data-pid]')?.addEventListener('click', async e => { e.stopPropagation(); if (confirm('удалить?')) { await apiReq('DELETE', `/posts/${post.id}`, { username: currentUser.username }); loadFeed(); } });
+    if (showDelete && isOwner) card.querySelector('[data-pid]')?.addEventListener('click', async e => { e.stopPropagation(); if (confirm('удалить?')) { await apiReq('DELETE', `/posts/${post.id}`); loadFeed(); } });
     card.querySelector('.like-btn')?.addEventListener('click', async function() { const r = await apiReq('POST', `/posts/${post.id}/like`, { username: currentUser.username }); if (r.error) return; post.likes = r.likes; this.classList.toggle('liked', r.liked); this.innerHTML = `${r.liked?'❤️':'🤍'} ${r.likes}`; if (r.liked) { const rect = this.getBoundingClientRect(); animateLike(rect.left+rect.width/2-16, rect.top-20); } });
     card.querySelector('.cmt-btn')?.addEventListener('click', () => openComments(post.id));
 }
@@ -318,14 +318,14 @@ $('publishPostBtn').addEventListener('click', async () => {
 
 // GRAY AI
 function loadAI() {
-    $('aiContent').innerHTML = `<div style="text-align:center;padding:20px;"><div style="font-size:4rem;">🧠</div><h2 style="color:var(--primary-light);">gray ai</h2><p style="color:var(--text-secondary);">нейросеть Zocial на базе Mistral-7B</p><div id="aiChat" style="text-align:left;margin:16px 0;max-height:50vh;overflow-y:auto;"></div><div style="display:flex;gap:8px;"><input class="modal-input" id="aiPrompt" placeholder="спроси что-нибудь..." style="flex:1;margin:0;"><button class="btn btn-primary" id="aiSend">→</button></div></div>`;
+    $('aiContent').innerHTML = `<div style="text-align:center;padding:20px;"><div style="font-size:4rem;">🧠</div><h2 style="color:var(--primary-light);">gray ai</h2><p style="color:var(--text-secondary);">нейросеть Zocial</p><div id="aiChat" style="text-align:left;margin:16px 0;max-height:50vh;overflow-y:auto;"></div><div style="display:flex;gap:8px;"><input class="modal-input" id="aiPrompt" placeholder="спроси что-нибудь..." style="flex:1;margin:0;"><button class="btn btn-primary" id="aiSend">→</button></div></div>`;
     $('aiSend').addEventListener('click', async () => {
         const prompt = $('aiPrompt').value.trim();
         if (!prompt) return;
         const chat = $('aiChat');
         chat.innerHTML += `<div class="msg-bubble outgoing" style="margin-bottom:8px;">${esc(prompt)}</div>`;
         $('aiPrompt').value = '';
-        chat.innerHTML += '<div class="msg-bubble incoming" style="margin-bottom:8px;font-style:italic;">думаю...</div>';
+        chat.innerHTML += '<div class="msg-bubble incoming" style="margin-bottom:8px;">думаю...</div>';
         chat.scrollTop = chat.scrollHeight;
         const r = await apiReq('POST', '/grayai', { prompt });
         chat.innerHTML = chat.innerHTML.replace('думаю...', esc(r.response || 'ошибка'));
@@ -345,8 +345,8 @@ $('closeChatBtn').addEventListener('click', closeChat); $('chatSendBtn').addEven
 async function loadBank() {
     const bank = await apiReq('GET', '/bank/' + currentUser.username);
     if (bank.error) return;
-    $('bankContent').innerHTML = `<div class="bank-balance-card"><div style="color:#93c5fd;">баланс</div><div class="bank-amount" id="bankBalance">${bank.balance.toLocaleString()} 🪙</div><div style="color:#94a3b8;">кликер: +${bank.clickLevel} | пассив: +${bank.passiveLevel}/сек</div></div><div class="bank-clicker" id="bankClicker"><div style="font-size:3rem;">🪙</div><div>+${bank.clickLevel}</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;"><button class="btn btn-outline" id="bankUpgrade">улучшить<br><small>${(bank.clickLevel*2*50).toLocaleString()} 🪙</small></button><button class="btn btn-outline" id="bankPassive">пассивный<br><small>${((bank.passiveLevel+1)*100).toLocaleString()} 🪙</small></button><button class="btn btn-outline" id="bankTransfer">💸 перевод</button></div>`;
-    $('bankClicker').addEventListener('click', async function(e) { const r = await apiReq('POST', '/bank/click', { username: currentUser.username }); if (!r.error) $('bankBalance').textContent = r.balance.toLocaleString() + ' 🪙'; });
+    $('bankContent').innerHTML = `<div class="bank-balance-card"><div style="color:#93c5fd;">баланс</div><div class="bank-amount" id="bankBalance">${(bank.balance||0).toLocaleString()} 🪙</div><div style="color:#94a3b8;">кликер: +${bank.click_level||1} | пассив: +${bank.passive_level||0}/сек</div></div><div class="bank-clicker" id="bankClicker"><div style="font-size:3rem;">🪙</div><div>+${bank.click_level||1}</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;"><button class="btn btn-outline" id="bankUpgrade">улучшить<br><small>${((bank.click_level||1)*2*50).toLocaleString()} 🪙</small></button><button class="btn btn-outline" id="bankPassive">пассивный<br><small>${(((bank.passive_level||0)+1)*100).toLocaleString()} 🪙</small></button><button class="btn btn-outline" id="bankTransfer">💸 перевод</button></div>`;
+    $('bankClicker').addEventListener('click', async function(e) { const r = await apiReq('POST', '/bank/click', { username: currentUser.username }); if (!r.error) $('bankBalance').textContent = (r.balance||0).toLocaleString() + ' 🪙'; });
     $('bankUpgrade').addEventListener('click', async () => { const r = await apiReq('POST', '/bank/upgrade', { username: currentUser.username }); if (!r.error) loadBank(); else alert(r.error); });
     $('bankPassive').addEventListener('click', async () => { const r = await apiReq('POST', '/bank/passive', { username: currentUser.username }); if (!r.error) loadBank(); else alert(r.error); });
     $('bankTransfer').addEventListener('click', () => { $('transferUsername').value = ''; $('transferAmount').value = ''; $('transferSuccess').style.display = 'none'; $('bankTransferModal').classList.add('open'); });
@@ -361,18 +361,15 @@ async function loadProfile() {
     const subs = await apiReq('GET', '/subs/' + currentUser.username);
     const followers = allUsersCache.filter(u => subs.includes(u.username)).length;
     const verified = isVerified(currentUser.username);
-    $('profileContent').innerHTML = `<div class="profile-header"><div class="profile-avatar" id="profileAvatarMain">${(currentUser.avatar?`<img src="${currentUser.avatar}">`:currentUser.name[0])}</div><div class="profile-info"><div class="profile-name">${esc(currentUser.name)}${verified?'<span class="verified-badge" style="width:20px;height:20px;font-size:0.8rem;line-height:20px;">✓</span>':''}</div><div class="profile-username">@${esc(currentUser.username)}</div></div></div><div class="profile-stats"><div class="stat-item"><div class="stat-number">${myPosts.length}</div><div class="stat-label">постов</div></div><div class="stat-item" id="statSubs"><div class="stat-number">${subs.length}</div><div class="stat-label">подписок</div></div><div class="stat-item" id="statFollowers"><div class="stat-number">${followers}</div><div class="stat-label">подписчиков</div></div><div class="stat-item"><div class="stat-number">${bank.balance.toLocaleString()}</div><div class="stat-label">🪙</div></div></div><div style="display:flex;gap:10px;margin:16px 0;"><button class="btn btn-primary" id="profileEditBtn">✏️ редактировать</button><button class="btn btn-outline" id="profileSettingsBtn">⚙️ настройки</button></div><h4 style="color:var(--primary-light);margin:16px 0;">мои посты</h4><div id="myPostsList"></div>`;
+    $('profileContent').innerHTML = `<div class="profile-header"><div class="profile-avatar">${currentUser.name[0]}</div><div class="profile-info"><div class="profile-name">${esc(currentUser.name)}${verified?'<span class="verified-badge" style="width:20px;height:20px;font-size:0.8rem;line-height:20px;">✓</span>':''}</div><div class="profile-username">@${esc(currentUser.username)}</div></div></div><div class="profile-stats"><div class="stat-item"><div class="stat-number">${myPosts.length}</div><div class="stat-label">постов</div></div><div class="stat-item" id="statSubs"><div class="stat-number">${subs.length}</div><div class="stat-label">подписок</div></div><div class="stat-item" id="statFollowers"><div class="stat-number">${followers}</div><div class="stat-label">подписчиков</div></div><div class="stat-item"><div class="stat-number">${(bank.balance||0).toLocaleString()}</div><div class="stat-label">🪙</div></div></div><div style="display:flex;gap:10px;margin:16px 0;"><button class="btn btn-primary" id="profileEditBtn">✏️ редактировать</button><button class="btn btn-outline" id="profileSettingsBtn">⚙️ настройки</button></div><h4 style="color:var(--primary-light);margin:16px 0;">мои посты</h4><div id="myPostsList"></div>`;
     const c = $('myPostsList');
     if (!myPosts.length) c.innerHTML = '<div style="text-align:center;padding:20px;">нет постов</div>';
     else myPosts.forEach(p => renderPost(p, c, true));
     $('profileEditBtn').addEventListener('click', () => {
         $('editNameInput').value = currentUser.name; $('editBioInput').value = currentUser.bio || '';
-        const av = $('editAvatarPreview'); av.textContent = currentUser.name[0];
         $('editProfileModal').classList.add('open');
     });
     $('profileSettingsBtn').addEventListener('click', () => switchPage('settings'));
-    $('statSubs').addEventListener('click', () => showUserList('подписки', subs.map(u => allUsersCache.find(x => x.username === u) || { username: u, name: u })));
-    $('statFollowers').addEventListener('click', () => showUserList('подписчики', allUsersCache.filter(u => subs.includes(u.username))));
 }
 $('saveEditBtn').addEventListener('click', async () => {
     const name = $('editNameInput').value.trim() || currentUser.name;
@@ -398,23 +395,12 @@ async function openContact(username) {
     $('contactBackBtn').addEventListener('click', () => switchPage('feed'));
 }
 
-function showUserList(title, users) {
-    $('userListTitle').textContent = title;
-    $('userListContent').innerHTML = users.map(u => `<div class="search-result-item" data-u="${u.username}"><div class="post-avatar" style="width:44px;height:44px;font-size:0.9rem;">${u.avatar ? `<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : (u.name||u.username)[0].toUpperCase()}</div><div style="font-weight:600;">@${esc(u.username)}${isVerified(u.username)?' <span class="verified-badge">✓</span>':''}</div></div>`).join('');
-    $('userListContent').querySelectorAll('.search-result-item').forEach(el => el.addEventListener('click', () => { $('userListModal').classList.remove('open'); openContact(el.dataset.u); }));
-    $('userListModal').classList.add('open');
-}
-$('closeUserListBtn').addEventListener('click', () => $('userListModal').classList.remove('open'));
-
 // НАСТРОЙКИ
 function loadSettings() {
     const isLight = document.body.classList.contains('theme-light');
     $('settingsContent').innerHTML = `<h3 style="color:var(--primary-light);margin-bottom:24px;">⚙️ настройки</h3><p style="color:var(--text-secondary);margin-bottom:8px;">тема</p><div class="theme-switch" id="themeSwitch"><div class="switch-slider ${isLight ? 'right' : ''}"></div><button class="switch-option ${!isLight ? 'active' : ''}" data-theme="dark">🌙 тёмная</button><button class="switch-option ${isLight ? 'active' : ''}" data-theme="light">☀️ светлая</button></div><div class="settings-item" id="setAbout"><span>ℹ️</span><span style="flex:1;">о приложении</span></div><div class="settings-item" id="setLogout"><span>🚪</span><span style="color:var(--accent);">выйти</span></div>`;
     document.querySelectorAll('#themeSwitch .switch-option').forEach(btn => btn.addEventListener('click', function() { const t = this.dataset.theme; document.querySelectorAll('#themeSwitch .switch-option').forEach(b => b.classList.remove('active')); this.classList.add('active'); document.querySelector('#themeSwitch .switch-slider').classList.toggle('right', t === 'light'); document.body.classList.toggle('theme-light', t === 'light'); localStorage.setItem('zc_theme', t); }));
-    $('setAbout').addEventListener('click', () => {
-        $('aboutBackBtn').onclick = () => switchPage('settings');
-        switchPage('about');
-    });
+    $('setAbout').addEventListener('click', () => { $('aboutBackBtn').onclick = () => switchPage('settings'); switchPage('about'); });
     $('setLogout').addEventListener('click', () => { if (confirm('выйти?')) { localStorage.removeItem('zocial_session'); location.reload(); } });
 }
 
