@@ -15,9 +15,10 @@
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         body { font-family:'Segoe UI',sans-serif; background:var(--bg); color:var(--text); display:flex; justify-content:center; align-items:center; min-height:100vh; overflow:hidden; }
         .app { width:100%; max-width:430px; height:100vh; height:100dvh; display:flex; flex-direction:column; background:var(--bg); position:relative; overflow:hidden; }
+        
         .login-screen { position:fixed; inset:0; background:var(--bg); z-index:500; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; max-width:430px; margin:0 auto; }
         .login-screen.hidden { display:none; }
-        .login-logo { font-size:3rem; font-weight:800; color:var(--primary-light); margin-bottom:8px; }
+        .login-logo-img { width:80px; height:80px; border-radius:20px; margin-bottom:16px; object-fit:cover; }
         .login-version { font-size:0.8rem; color:var(--text-secondary); margin-bottom:20px; }
         .login-tabs { display:flex; width:100%; background:var(--surface2); border-radius:25px; padding:4px; margin-bottom:20px; position:relative; }
         .login-tab-slider { position:absolute; top:4px; left:4px; height:calc(100% - 8px); width:calc(50% - 4px); background:var(--primary); border-radius:22px; transition:transform 0.35s; z-index:1; }
@@ -30,21 +31,26 @@
         .login-input:focus { border-color:var(--primary); }
         .login-error { color:var(--accent); font-size:0.85rem; text-align:center; min-height:20px; }
         .login-btn { width:100%; padding:16px; border-radius:25px; border:none; background:var(--primary); color:white; font-size:1.1rem; font-weight:700; cursor:pointer; }
+        
         .main-app { display:none; width:100%; height:100%; flex-direction:column; }
         .main-app.visible { display:flex; }
-        .header { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; background:var(--surface); border-bottom:1px solid var(--border); z-index:100; }
-        .logo { font-size:1.4rem; font-weight:800; color:var(--primary-light); }
+        .header { display:flex; align-items:center; justify-content:space-between; padding:10px 20px; background:var(--surface); border-bottom:1px solid var(--border); z-index:100; }
+        .header-left { display:flex; align-items:center; gap:8px; }
+        .header-logo-img { width:32px; height:32px; border-radius:8px; object-fit:cover; }
         .logo-version { font-size:0.65rem; color:var(--text-secondary); margin-left:4px; }
         .icon-btn { width:38px; height:38px; border-radius:50%; background:var(--surface2); border:1px solid var(--border); color:var(--primary-light); font-size:1.2rem; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+        
         .main-content { flex:1; overflow:hidden; position:relative; }
         .pages-container { display:flex; width:100%; height:100%; transition:transform 0.3s ease; }
         .page { min-width:100%; height:100%; overflow-y:auto; padding:16px; }
         .page::-webkit-scrollbar { width:0; }
+        
         .post-card { background:var(--surface); border-radius:var(--radius); padding:16px; margin-bottom:14px; border:1px solid var(--border); position:relative; animation:postAppear 0.4s ease; }
         @keyframes postAppear { from{opacity:0;transform:scale(0.8) translateY(20px);} to{opacity:1;transform:scale(1) translateY(0);} }
         .post-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
         .post-avatar { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--primary-light)); display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0; cursor:pointer; overflow:hidden; }
         .post-avatar img { width:100%; height:100%; object-fit:cover; }
+        .post-user-info { flex:1; cursor:pointer; }
         .post-username { font-weight:600; color:var(--primary-light); cursor:pointer; display:flex; align-items:center; gap:4px; }
         .post-time { font-size:0.7rem; color:var(--text-secondary); }
         .post-text { margin-bottom:12px; line-height:1.5; }
@@ -54,12 +60,14 @@
         .post-action.liked { color:var(--accent); }
         .delete-btn { position:absolute; top:8px; right:8px; background:none; border:none; color:var(--text-secondary); cursor:pointer; z-index:1; font-size:1.1rem; }
         .edit-btn { position:absolute; top:8px; right:36px; background:none; border:none; color:var(--text-secondary); cursor:pointer; z-index:1; font-size:0.9rem; }
-        .verify-btn { position:absolute; top:8px; right:64px; background:none; border:none; color:var(--gold); cursor:pointer; z-index:1; font-size:0.8rem; }
+        .verify-btn { position:absolute; top:8px; right:64px; background:none; border:none; color:var(--gold); cursor:pointer; z-index:1; font-size:0.8rem; display:none; }
         .attach-btn { display:flex; align-items:center; gap:6px; padding:8px 16px; border-radius:20px; background:var(--surface2); border:1px solid var(--border); color:var(--primary-light); cursor:pointer; margin:8px 0; font-size:0.9rem; }
         .image-preview { width:100%; max-height:200px; object-fit:contain; border-radius:14px; margin:8px 0; display:none; }
         .verified-badge { display:inline-block; width:16px; height:16px; background:var(--primary); border-radius:50%; font-size:0.6rem; color:white; text-align:center; line-height:16px; margin-left:2px; flex-shrink:0; }
+        
         .like-animation { position:fixed; pointer-events:none; z-index:999; font-size:2rem; animation:likeFloat 0.8s ease-out forwards; }
         @keyframes likeFloat { 0%{opacity:1;transform:translateY(0) scale(1);} 50%{opacity:1;transform:translateY(-40px) scale(1.3);} 100%{opacity:0;transform:translateY(-80px) scale(0.8);} }
+        
         .profile-header { display:flex; align-items:center; gap:20px; padding:20px 0; }
         .profile-avatar { width:100px; height:100px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--primary-light)); display:flex; align-items:center; justify-content:center; font-size:2.8rem; font-weight:700; flex-shrink:0; overflow:hidden; cursor:pointer; }
         .profile-avatar img { width:100%; height:100%; object-fit:cover; }
@@ -74,6 +82,7 @@
         .btn-primary { background:var(--primary); color:white; }
         .btn-outline { background:transparent; border:2px solid var(--primary); color:var(--primary-light); }
         .btn:active { transform:scale(0.95); }
+        
         .chat-screen { position:fixed; inset:0; background:var(--bg); z-index:200; display:flex; flex-direction:column; transform:translateX(100%); transition:0.3s; max-width:430px; margin:0 auto; }
         .chat-screen.open { transform:translateX(0); }
         .chat-nav { display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--surface); }
@@ -87,26 +96,32 @@
         .chat-input-bar { display:flex; gap:8px; padding:12px 16px; padding-bottom:calc(12px + var(--safe-bottom)); background:var(--surface); }
         .chat-input { flex:1; background:var(--surface2); border:1px solid var(--border); padding:12px 18px; border-radius:25px; color:var(--text); outline:none; }
         .send-btn { width:44px; height:44px; border-radius:50%; background:var(--primary); border:none; color:white; font-size:1.2rem; cursor:pointer; }
+        
         .bottom-nav { display:flex; background:var(--surface); border-top:1px solid var(--border); padding:8px 10px; padding-bottom:calc(8px + var(--safe-bottom)); }
         .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; background:none; border:none; color:var(--primary-light); font-size:0.7rem; }
         .nav-item .nav-icon { font-size:1.5rem; }
         .nav-item.active { color:var(--primary); }
+        
         .fab { position:fixed; bottom:100px; right:20px; width:56px; height:56px; border-radius:50%; background:var(--primary); color:white; font-size:2rem; border:none; box-shadow:0 8px 24px rgba(37,99,235,0.6); cursor:pointer; z-index:150; animation:fabPulse 2s infinite; }
         @keyframes fabPulse { 0%,100%{box-shadow:0 8px 24px rgba(37,99,235,0.6);} 50%{box-shadow:0 8px 32px rgba(37,99,235,0.9);} }
         .fab.hidden { display:none; }
+        
         .bank-balance-card { background:linear-gradient(135deg,#1e3a5f,#162d4a); border-radius:var(--radius); padding:24px; text-align:center; margin:16px 0; border:2px solid #3b82f6; }
         .bank-amount { font-size:3rem; font-weight:800; color:var(--gold); }
         .bank-clicker { background:radial-gradient(circle,#2563eb,#1d4ed8); border-radius:50%; width:140px; height:140px; margin:16px auto; display:flex; align-items:center; justify-content:center; flex-direction:column; border:3px solid #3b82f6; cursor:pointer; }
         .bank-clicker:active { transform:scale(0.9); }
         .float-text { position:fixed; pointer-events:none; z-index:999; font-weight:700; color:var(--gold); animation:floatUp 1s ease-out forwards; }
         @keyframes floatUp { 0%{opacity:1;transform:translateY(0);} 100%{opacity:0;transform:translateY(-60px);} }
+        
         .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:300; display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:0.3s; }
         .modal-overlay.open { opacity:1; pointer-events:all; }
         .modal-sheet { background:var(--surface); width:100%; max-width:430px; border-radius:24px 24px 0 0; padding:20px; transform:translateY(100%); transition:0.3s; max-height:85vh; overflow-y:auto; }
         .modal-overlay.open .modal-sheet { transform:translateY(0); }
         .modal-input { width:100%; padding:14px; border-radius:20px; border:2px solid var(--border); background:var(--surface2); color:var(--text); outline:none; margin:8px 0; }
+        
         .settings-item { display:flex; align-items:center; gap:12px; padding:16px; background:var(--surface); border-radius:14px; margin-bottom:8px; cursor:pointer; }
         .comment-item { display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
+        
         .welcome-overlay { position:fixed; inset:0; background:var(--bg); z-index:600; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px; }
         .welcome-title { font-size:2rem; font-weight:800; color:var(--primary-light); animation:scaleIn 0.5s ease; }
         @keyframes scaleIn { from{opacity:0;transform:scale(0.5);} to{opacity:1;transform:scale(1);} }
@@ -117,23 +132,26 @@
         .onboarding-dot.active { background:var(--primary); width:24px; border-radius:5px; }
         .confetti { position:fixed; pointer-events:none; z-index:1000; font-size:1.5rem; animation:confettiFall 2.5s ease-out forwards; }
         @keyframes confettiFall { 0%{opacity:1;transform:translateY(-100px) rotate(0deg);} 100%{opacity:0;transform:translateY(100vh) rotate(720deg);} }
+        
         .search-panel { position:fixed; top:0; left:0; right:0; bottom:0; background:var(--bg); z-index:250; display:flex; flex-direction:column; max-width:430px; margin:0 auto; transform:translateY(-100%); transition:transform 0.3s ease; }
         .search-panel.open { transform:translateY(0); }
         .search-panel-header { display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--surface); }
         .search-panel-body { flex:1; overflow-y:auto; padding:16px; }
         .search-result-item { display:flex; align-items:center; gap:12px; padding:14px; background:var(--surface); border-radius:14px; margin-bottom:8px; cursor:pointer; border:1px solid var(--border); }
+        
         .theme-switch { display:flex; width:100%; background:var(--surface2); border-radius:25px; padding:4px; position:relative; margin:12px 0; }
         .theme-switch .switch-slider { position:absolute; top:4px; left:4px; height:calc(100% - 8px); width:calc(50% - 4px); background:var(--primary); border-radius:22px; transition:transform 0.35s; z-index:1; }
         .theme-switch .switch-slider.right { transform:translateX(100%); }
         .theme-switch .switch-option { flex:1; padding:12px; text-align:center; border-radius:22px; cursor:pointer; font-weight:600; color:var(--text-secondary); border:none; background:transparent; font-size:0.9rem; z-index:2; }
         .theme-switch .switch-option.active { color:white; }
+        
         @media (min-width:431px) { .app,.login-screen { border-radius:30px; height:95vh; } .chat-screen,.search-panel { border-radius:30px; } }
     </style>
 </head>
 <body>
 <div class="login-screen" id="loginScreen">
-    <div class="login-logo">❄️ zocial</div>
-    <div class="login-version">версия 0.1 (beta)</div>
+    <img src="https://imgfy.ru/ib/JGoGzQlCDIcONHE_1778078416.webp" class="login-logo-img" alt="Zocial">
+    <div class="login-version">версия 0.1 (beta) · zima.dev</div>
     <div class="login-tabs" id="loginSwitch">
         <div class="login-tab-slider"></div>
         <button class="login-tab active" data-tab="login">вход</button>
@@ -156,7 +174,15 @@
 
 <div class="main-app" id="mainApp">
     <div class="app">
-        <div class="header"><span class="logo">❄️ zocial <span class="logo-version">0.1 beta</span></span><div class="header-actions"><button class="icon-btn" id="searchBtn">🔍</button></div></div>
+        <div class="header">
+            <div class="header-left">
+                <img src="https://imgfy.ru/ib/JGoGzQlCDIcONHE_1778078416.webp" class="header-logo-img" alt="Zocial">
+                <span class="logo-version">0.1 beta</span>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" id="searchBtn">🔍</button>
+            </div>
+        </div>
         <div class="main-content">
             <div class="pages-container" id="pagesContainer">
                 <div class="page" id="feedPage"><div id="feedPosts"></div></div>
@@ -165,7 +191,7 @@
                 <div class="page" id="profilePage"><div id="profileContent"></div></div>
                 <div class="page" id="contactPage"><div id="contactContent"></div></div>
                 <div class="page" id="settingsPage"><div id="settingsContent"></div></div>
-                <div class="page" id="aboutPage"><div style="text-align:center;padding:40px 20px;"><div style="font-size:4rem;">❄️</div><h2 style="color:var(--primary-light);">zocial</h2><p style="color:var(--text-secondary);">версия 0.1 (beta)</p><p style="margin-top:20px;color:var(--text-secondary);">социальная сеть с банком, чатами и видео</p><p style="margin-top:8px;color:var(--primary-light);">© 2025 zocial team</p><button class="btn btn-outline" id="aboutBackBtn" style="margin-top:24px;">← назад</button></div></div>
+                <div class="page" id="aboutPage"><div style="text-align:center;padding:40px 20px;"><img src="https://imgfy.ru/ib/JGoGzQlCDIcONHE_1778078416.webp" style="width:80px;height:80px;border-radius:20px;margin-bottom:16px;" alt="Zocial"><p style="color:var(--text-secondary);">версия 0.1 (beta)</p><p style="margin-top:20px;color:var(--text-secondary);">социальная сеть с банком, чатами и видео</p><p style="margin-top:8px;color:var(--primary-light);">© 2025 zima.dev</p><button class="btn btn-outline" id="aboutBackBtn" style="margin-top:24px;">← назад</button></div></div>
             </div>
         </div>
         <button class="fab hidden" id="fabCreatePost">＋</button>
@@ -207,7 +233,7 @@ async function req(method, endpoint, body = null) {
 
 let currentUser = null, globalChats = {}, activeChatId = null, activeCommentsPostId = null, currentPage = 'feed';
 let allPostsCache = [], tempPostMedia = null, tempPostMediaType = null, editingPostId = null;
-let verifiedList = ['snzhk'];
+let verifiedList = ['snzhk'], allUsersCache = [];
 
 function esc(t) { return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[c]); }
 function animateLike(x, y) { const el = document.createElement('div'); el.className = 'like-animation'; el.textContent = '❤️'; el.style.left = x + 'px'; el.style.top = y + 'px'; document.body.appendChild(el); setTimeout(() => el.remove(), 800); }
@@ -227,13 +253,15 @@ function switchPage(page) {
     else if (page === 'chats') loadChats();
     else if (page === 'profile') loadProfile();
     else if (page === 'settings') loadSettings();
-    else if (page === 'about') { $('aboutBackBtn').addEventListener('click', () => switchPage('settings')); }
+    else if (page === 'about') { $('aboutBackBtn').onclick = () => switchPage('settings'); }
 }
 document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => switchPage(n.dataset.page)));
 
 async function initApp() {
     const v = await req('GET', '/verified');
     if (Array.isArray(v)) verifiedList = v;
+    const users = await req('GET', '/users');
+    if (Array.isArray(users)) allUsersCache = users;
 }
 
 function showApp() { $('loginScreen').classList.add('hidden'); $('mainApp').classList.add('visible'); switchPage('feed'); loadFeed(); loadChats(); }
@@ -301,15 +329,16 @@ $('searchInput').addEventListener('input', () => {
 });
 
 // ЛЕНТА
-async function loadFeed() { $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;">загрузка...</div>'; const posts = await req('GET', '/posts'); allPostsCache = Array.isArray(posts) ? posts : []; renderFeedFromCache(); }
+async function loadFeed() { $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;">загрузка...</div>'; const posts = await req('GET', '/posts'); allPostsCache = Array.isArray(posts) ? posts : []; await initApp(); renderFeedFromCache(); }
 function renderFeedFromCache() { $('feedPosts').innerHTML = ''; if (!allPostsCache.length) { $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">пока нет постов</div>'; return; } allPostsCache.forEach(post => renderPost(post, $('feedPosts'))); }
 function renderPost(post, container, showDelete = false) {
     const card = document.createElement('div'); card.className = 'post-card';
     const liked = post.likedBy?.includes(currentUser?.username);
     const verified = isVerified(post.username);
     const isOwner = post.username === currentUser?.username;
-    card.innerHTML = `${isOwner && showDelete ? `<button class="delete-btn" data-pid="${post.id}">✕</button>` : ''}${isOwner && showDelete ? `<button class="edit-btn" data-pid="${post.id}">✏️</button>` : ''}${currentUser?.username === 'snzhk' ? `<button class="verify-btn" data-un="${post.username}">${verified ? '✅' : '☑️'}</button>` : ''}
-        <div class="post-header"><div class="post-avatar" id="pa-${post.id}">${(post.username||'?')[0].toUpperCase()}</div><div><div class="post-username">@${esc(post.username)}${verified ? '<span class="verified-badge">✓</span>' : ''}</div><div class="post-time">${post.time||''}${post.edited ? ' (изменено)' : ''}</div></div></div>
+    const author = allUsersCache.find(u => u.username === post.username);
+    card.innerHTML = `${isOwner && showDelete ? `<button class="delete-btn" data-pid="${post.id}">✕</button>` : ''}${isOwner && showDelete ? `<button class="edit-btn" data-pid="${post.id}">✏️</button>` : ''}
+        <div class="post-header"><div class="post-avatar" id="pa-${post.id}">${author?.avatar ? `<img src="${author.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : (post.username||'?')[0].toUpperCase()}</div><div class="post-user-info"><div class="post-username">@${esc(post.username)}${verified ? '<span class="verified-badge">✓</span>' : ''}</div><div class="post-time">${post.time||''}${post.edited ? ' (изменено)' : ''}</div></div></div>
         <div class="post-text">${esc(post.text||'')}</div>
         ${post.mediaType === 'image' && post.media ? `<img class="post-media" src="${post.media}" alt="post image">` : ''}
         <div class="post-actions"><button class="post-action like-btn ${liked?'liked':''}" data-pid="${post.id}">${liked?'❤️':'🤍'} ${post.likes||0}</button><button class="post-action cmt-btn" data-pid="${post.id}">💬 ${(post.comments||[]).length}</button></div>`;
@@ -320,7 +349,6 @@ function renderPost(post, container, showDelete = false) {
         card.querySelector('.delete-btn')?.addEventListener('click', async e => { e.stopPropagation(); if (confirm('удалить?')) { await req('DELETE', `/posts/${post.id}`, { username: currentUser.username }); loadFeed(); } });
         card.querySelector('.edit-btn')?.addEventListener('click', e => { e.stopPropagation(); openEditPost(post); });
     }
-    card.querySelector('.verify-btn')?.addEventListener('click', async e => { e.stopPropagation(); const r = await req('POST', '/verify/toggle', { by: currentUser.username, target: post.username }); if (!r.error) { await initApp(); loadFeed(); } });
     card.querySelector('.like-btn')?.addEventListener('click', async function() { const r = await req('POST', `/posts/${post.id}/like`, { username: currentUser.username }); if (r.error) return; post.likes = r.likes; this.classList.toggle('liked', r.liked); this.innerHTML = `${r.liked?'❤️':'🤍'} ${r.likes}`; if (r.liked) { const rect = this.getBoundingClientRect(); animateLike(rect.left+rect.width/2-16, rect.top-20); } });
     card.querySelector('.cmt-btn')?.addEventListener('click', () => openComments(post.id));
 }
@@ -354,10 +382,10 @@ $('attachImageBtn').addEventListener('click', () => $('postImageInput').click())
 $('postImageInput').addEventListener('change', () => { const f = $('postImageInput').files[0]; if (!f) return; const r = new FileReader(); r.onload = e => { tempPostMedia = e.target.result; tempPostMediaType = 'image'; $('postImagePreview').src = tempPostMedia; $('postImagePreview').style.display = 'block'; }; r.readAsDataURL(f); });
 
 // ЧАТЫ
-async function loadChats() { if (!currentUser) return; const result = await req('GET', '/chat/' + currentUser.username); globalChats = result || {}; $('chatListContainer').innerHTML = ''; const users = Object.keys(globalChats); if (!users.length) { $('chatListContainer').innerHTML = '<div style="text-align:center;padding:40px;">нет сообщений</div>'; return; } users.forEach(u => { const msgs = globalChats[u] || []; const div = document.createElement('div'); div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px;background:var(--surface);border-radius:14px;margin-bottom:8px;cursor:pointer;border:1px solid var(--border);'; div.innerHTML = `<div class="post-avatar" style="width:48px;height:48px;">${u[0].toUpperCase()}</div><div><div style="font-weight:600;">@${esc(u)}${isVerified(u)?' <span class="verified-badge">✓</span>':''}</div><div style="font-size:0.8rem;color:var(--text-secondary);">${msgs.length?msgs[msgs.length-1].text:''}</div></div>`; div.addEventListener('click', () => openChat(u)); $('chatListContainer').appendChild(div); }); }
+async function loadChats() { if (!currentUser) return; const result = await req('GET', '/chat/' + currentUser.username); globalChats = result || {}; $('chatListContainer').innerHTML = ''; const users = Object.keys(globalChats); if (!users.length) { $('chatListContainer').innerHTML = '<div style="text-align:center;padding:40px;">нет сообщений</div>'; return; } users.forEach(u => { const msgs = globalChats[u] || []; const div = document.createElement('div'); div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px;background:var(--surface);border-radius:14px;margin-bottom:8px;cursor:pointer;border:1px solid var(--border);'; const chatUser = allUsersCache.find(x => x.username === u); div.innerHTML = `<div class="post-avatar" style="width:48px;height:48px;">${chatUser?.avatar ? `<img src="${chatUser.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : u[0].toUpperCase()}</div><div><div style="font-weight:600;">@${esc(u)}${isVerified(u)?' <span class="verified-badge">✓</span>':''}</div><div style="font-size:0.8rem;color:var(--text-secondary);">${msgs.length?msgs[msgs.length-1].text:''}</div></div>`; div.addEventListener('click', () => openChat(u)); $('chatListContainer').appendChild(div); }); }
 function openChat(u) { activeChatId = u; $('chatScreenName').textContent = '@' + u; renderChatAvatar(u); renderChatMsgs(); $('chatScreen').classList.add('open'); }
 function closeChat() { $('chatScreen').classList.remove('open'); activeChatId = null; loadChats(); }
-function renderChatAvatar(u) { const av = $('chatNavAvatar'); av.innerHTML = ''; if (allUsersCache) { const user = allUsersCache.find(x => x.username === u); if (user?.avatar) { av.innerHTML = `<img src="${user.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; return; } } av.textContent = u[0].toUpperCase(); }
+function renderChatAvatar(u) { const av = $('chatNavAvatar'); av.innerHTML = ''; const user = allUsersCache.find(x => x.username === u); if (user?.avatar) { av.innerHTML = `<img src="${user.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; return; } av.textContent = u[0].toUpperCase(); }
 function renderChatMsgs() { $('chatMessages').innerHTML = ''; if (!activeChatId || !globalChats[activeChatId]) return; globalChats[activeChatId].forEach(m => { const b = document.createElement('div'); b.className = 'msg-bubble ' + (m.from === currentUser.username ? 'outgoing' : 'incoming'); b.textContent = m.text; $('chatMessages').appendChild(b); }); }
 async function sendMsg() { const text = $('chatInput').value.trim(); if (!text || !activeChatId) return; await req('POST', '/chat/send', { from: currentUser.username, to: activeChatId, text }); $('chatInput').value = ''; loadChats().then(() => { if (activeChatId) renderChatMsgs(); }); }
 $('closeChatBtn').addEventListener('click', closeChat);
@@ -384,24 +412,24 @@ $('confirmTransferBtn').addEventListener('click', async () => { const to = $('tr
 $('cancelTransferBtn').addEventListener('click', () => $('bankTransferModal').classList.remove('open'));
 
 // ПРОФИЛЬ
-async function loadProfile() { const bank = await req('GET', '/bank/' + currentUser.username); const myPosts = allPostsCache.filter(p => p.username === currentUser.username); const subs = await req('GET', '/subs/' + currentUser.username); const allUsers = await req('GET', '/users'); const followers = allUsers.filter(u => subs.includes(u.username)).length; const verified = isVerified(currentUser.username); $('profileContent').innerHTML = `<div class="profile-header"><div class="profile-avatar" id="profileAvatarMain">${(currentUser.avatar?`<img src="${currentUser.avatar}">`:currentUser.name[0])}</div><div class="profile-info"><div class="profile-name">${esc(currentUser.name)}${verified?'<span class="verified-badge" style="width:20px;height:20px;font-size:0.8rem;line-height:20px;">✓</span>':''}</div><div class="profile-username">@${esc(currentUser.username)}</div></div></div><div class="profile-stats"><div class="stat-item"><div class="stat-number">${myPosts.length}</div><div class="stat-label">постов</div></div><div class="stat-item" id="statSubs"><div class="stat-number">${subs.length}</div><div class="stat-label">подписок</div></div><div class="stat-item" id="statFollowers"><div class="stat-number">${followers}</div><div class="stat-label">подписчиков</div></div><div class="stat-item"><div class="stat-number">${bank.balance.toLocaleString()}</div><div class="stat-label">🪙</div></div></div><div style="display:flex;gap:10px;margin:16px 0;"><button class="btn btn-primary" id="profileEditBtn">✏️ редактировать</button><button class="btn btn-outline" id="profileSettingsBtn">⚙️ настройки</button></div><h4 style="color:var(--primary-light);margin:16px 0;">мои посты</h4><div id="myPostsList"></div>`; const c = $('myPostsList'); if (!myPosts.length) c.innerHTML = '<div style="text-align:center;padding:20px;">нет постов</div>'; else myPosts.forEach(p => renderPost(p, c, true)); $('profileEditBtn').addEventListener('click', openEditProfile); $('profileSettingsBtn').addEventListener('click', () => switchPage('settings')); $('statSubs').addEventListener('click', () => showUserList('подписки', subs)); $('statFollowers').addEventListener('click', () => showUserList('подписчики', allUsers.filter(u => subs.includes(u.username)).map(u => u.username))); }
+async function loadProfile() { const bank = await req('GET', '/bank/' + currentUser.username); const myPosts = allPostsCache.filter(p => p.username === currentUser.username); const subs = await req('GET', '/subs/' + currentUser.username); const followers = allUsersCache.filter(u => subs.includes(u.username)).length; const verified = isVerified(currentUser.username); $('profileContent').innerHTML = `<div class="profile-header"><div class="profile-avatar" id="profileAvatarMain">${(currentUser.avatar?`<img src="${currentUser.avatar}">`:currentUser.name[0])}</div><div class="profile-info"><div class="profile-name">${esc(currentUser.name)}${verified?'<span class="verified-badge" style="width:20px;height:20px;font-size:0.8rem;line-height:20px;">✓</span>':''}</div><div class="profile-username">@${esc(currentUser.username)}</div></div></div><div class="profile-stats"><div class="stat-item"><div class="stat-number">${myPosts.length}</div><div class="stat-label">постов</div></div><div class="stat-item" id="statSubs"><div class="stat-number">${subs.length}</div><div class="stat-label">подписок</div></div><div class="stat-item" id="statFollowers"><div class="stat-number">${followers}</div><div class="stat-label">подписчиков</div></div><div class="stat-item"><div class="stat-number">${bank.balance.toLocaleString()}</div><div class="stat-label">🪙</div></div></div><div style="display:flex;gap:10px;margin:16px 0;"><button class="btn btn-primary" id="profileEditBtn">✏️ редактировать</button><button class="btn btn-outline" id="profileSettingsBtn">⚙️ настройки</button></div><h4 style="color:var(--primary-light);margin:16px 0;">мои посты</h4><div id="myPostsList"></div>`; const c = $('myPostsList'); if (!myPosts.length) c.innerHTML = '<div style="text-align:center;padding:20px;">нет постов</div>'; else myPosts.forEach(p => renderPost(p, c, true)); $('profileEditBtn').addEventListener('click', openEditProfile); $('profileSettingsBtn').addEventListener('click', () => switchPage('settings')); $('statSubs').addEventListener('click', () => showUserList('подписки', subs.map(u => allUsersCache.find(x => x.username === u) || { username: u, name: u }))); $('statFollowers').addEventListener('click', () => showUserList('подписчики', allUsersCache.filter(u => subs.includes(u.username)))); }
 
 // КОНТАКТ
-async function openContact(username) { if (username === currentUser.username) { switchPage('profile'); return; } const user = await req('GET', '/users/' + username); if (user.error) return; const subs = await req('GET', '/subs/' + currentUser.username); const isSub = subs.includes(username); const verified = isVerified(username); switchPage('contact'); $('contactContent').innerHTML = `<div class="profile-header"><div class="profile-avatar">${user.avatar?`<img src="${user.avatar}">`:user.name[0]}</div><div class="profile-info"><div class="profile-name">${esc(user.name)}${verified?'<span class="verified-badge" style="width:20px;height:20px;font-size:0.8rem;line-height:20px;">✓</span>':''}</div><div class="profile-username">@${esc(username)}</div></div></div><div style="display:flex;gap:10px;margin:16px 0;"><button class="btn btn-primary" id="contactChatBtn">💬 написать</button><button class="btn btn-outline" id="contactSubBtn">${isSub?'✅ подписан':'➕ подписаться'}</button><button class="btn btn-outline" id="contactBackBtn">← назад</button></div>`; $('contactChatBtn').addEventListener('click', () => openChat(username)); $('contactSubBtn').addEventListener('click', async () => { const r = await req('POST', '/subs/toggle', { subscriber: currentUser.username, target: username }); $('contactSubBtn').textContent = r.subscribed ? '✅ подписан' : '➕ подписаться'; }); $('contactBackBtn').addEventListener('click', () => switchPage('feed')); }
+async function openContact(username) { if (username === currentUser.username) { switchPage('profile'); return; } const user = allUsersCache.find(u => u.username === username); if (!user) { alert('пользователь не найден'); return; } const subs = await req('GET', '/subs/' + currentUser.username); const isSub = subs.includes(username); const verified = isVerified(username); switchPage('contact'); $('contactContent').innerHTML = `<div class="profile-header"><div class="profile-avatar">${user.avatar?`<img src="${user.avatar}">`:user.name[0]}</div><div class="profile-info"><div class="profile-name">${esc(user.name)}${verified?'<span class="verified-badge" style="width:20px;height:20px;font-size:0.8rem;line-height:20px;">✓</span>':''}</div><div class="profile-username">@${esc(username)}</div></div></div><div style="display:flex;gap:10px;margin:16px 0;"><button class="btn btn-primary" id="contactChatBtn">💬 написать</button><button class="btn btn-outline" id="contactSubBtn">${isSub?'✅ подписан':'➕ подписаться'}</button>${currentUser.username === 'snzhk' ? `<button class="btn btn-outline" id="contactVerifyBtn" style="color:var(--gold);border-color:var(--gold);">${verified ? '✅ убрать галочку' : '☑️ выдать галочку'}</button>` : ''}<button class="btn btn-outline" id="contactBackBtn">← назад</button></div>`; $('contactChatBtn').addEventListener('click', () => openChat(username)); $('contactSubBtn').addEventListener('click', async () => { const r = await req('POST', '/subs/toggle', { subscriber: currentUser.username, target: username }); $('contactSubBtn').textContent = r.subscribed ? '✅ подписан' : '➕ подписаться'; }); const verifyBtn = $('contactVerifyBtn'); if (verifyBtn) verifyBtn.addEventListener('click', async () => { const r = await req('POST', '/verify/toggle', { by: currentUser.username, target: username }); if (!r.error) { await initApp(); openContact(username); } }); $('contactBackBtn').addEventListener('click', () => switchPage('feed')); }
 
 // РЕДАКТИРОВАНИЕ ПРОФИЛЯ
 function openEditProfile() { $('editNameInput').value = currentUser.name; $('editBioInput').value = currentUser.bio || ''; const av = $('editAvatarPreview'); if (currentUser.avatar) av.innerHTML = `<img src="${currentUser.avatar}" style="width:100%;height:100%;object-fit:cover;">`; else av.textContent = currentUser.name[0]; let avatarData = null; $('changeAvatarBtn').onclick = () => $('avatarInput').click(); $('avatarInput').onchange = () => { const f = $('avatarInput').files[0]; if (!f) return; const r = new FileReader(); r.onload = e => { avatarData = e.target.result; av.innerHTML = `<img src="${avatarData}" style="width:100%;height:100%;object-fit:cover;">`; }; r.readAsDataURL(f); }; $('saveEditBtn').onclick = async () => { const name = $('editNameInput').value.trim() || currentUser.name; const bio = $('editBioInput').value.trim(); const r = await req('POST', '/profile/update', { username: currentUser.username, name, bio, avatar: avatarData }); if (!r.error) { currentUser = r.user; currentUser.username = currentUser.username; localStorage.setItem('zocial_session', JSON.stringify(currentUser)); $('editProfileModal').classList.remove('open'); switchPage('profile'); loadProfile(); } }; $('cancelEditBtn').onclick = () => $('editProfileModal').classList.remove('open'); $('editProfileModal').classList.add('open'); }
 
 // СПИСОК
-async function showUserList(title, users) { $('userListTitle').textContent = title; $('userListContent').innerHTML = users.map(u => { const name = u.username || u; return `<div class="search-result-item" data-u="${name}"><div class="post-avatar" style="width:44px;height:44px;font-size:0.9rem;">${name[0].toUpperCase()}</div><div style="font-weight:600;">@${esc(name)}${isVerified(name)?' <span class="verified-badge">✓</span>':''}</div></div>`; }).join(''); $('userListContent').querySelectorAll('.search-result-item').forEach(el => el.addEventListener('click', () => { $('userListModal').classList.remove('open'); openContact(el.dataset.u); })); $('userListModal').classList.add('open'); }
+function showUserList(title, users) { $('userListTitle').textContent = title; $('userListContent').innerHTML = users.map(u => `<div class="search-result-item" data-u="${u.username}"><div class="post-avatar" style="width:44px;height:44px;font-size:0.9rem;">${u.avatar ? `<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : (u.name||u.username)[0].toUpperCase()}</div><div style="font-weight:600;">@${esc(u.username)}${isVerified(u.username)?' <span class="verified-badge">✓</span>':''}</div></div>`).join(''); $('userListContent').querySelectorAll('.search-result-item').forEach(el => el.addEventListener('click', () => { $('userListModal').classList.remove('open'); openContact(el.dataset.u); })); $('userListModal').classList.add('open'); }
 $('closeUserListBtn').addEventListener('click', () => $('userListModal').classList.remove('open'));
 
 // НАСТРОЙКИ
 function loadSettings() {
     const isLight = document.body.classList.contains('theme-light');
-    $('settingsContent').innerHTML = `<h3 style="color:var(--primary-light);margin-bottom:24px;">⚙️ настройки</h3><p style="color:var(--text-secondary);margin-bottom:8px;">тема оформления</p><div class="theme-switch" id="themeSwitch"><div class="switch-slider ${isLight ? 'right' : ''}"></div><button class="switch-option ${!isLight ? 'active' : ''}" data-theme="dark">🌙 тёмная</button><button class="switch-option ${isLight ? 'active' : ''}" data-theme="light">☀️ светлая</button></div><div class="settings-item" id="setBankInfo"><span>🏦</span><span style="flex:1;">о банке</span><span style="color:var(--text-secondary);">информация</span></div><div class="settings-item" id="setAbout"><span>ℹ️</span><span style="flex:1;">о приложении</span><span style="color:var(--text-secondary);">v0.1 beta</span></div><div style="height:1px;background:var(--border);margin:12px 0;"></div><div class="settings-item" id="setLogout"><span>🚪</span><span style="color:var(--accent);">выйти из аккаунта</span></div>`;
+    $('settingsContent').innerHTML = `<h3 style="color:var(--primary-light);margin-bottom:24px;">⚙️ настройки</h3><p style="color:var(--text-secondary);margin-bottom:8px;">тема оформления</p><div class="theme-switch" id="themeSwitch"><div class="switch-slider ${isLight ? 'right' : ''}"></div><button class="switch-option ${!isLight ? 'active' : ''}" data-theme="dark">🌙 тёмная</button><button class="switch-option ${isLight ? 'active' : ''}" data-theme="light">☀️ светлая</button></div><div class="settings-item" id="setBankInfo"><span>🏦</span><span style="flex:1;">о банке</span></div><div class="settings-item" id="setAbout"><span>ℹ️</span><span style="flex:1;">о приложении</span><span style="color:var(--text-secondary);">v0.1 beta</span></div><div style="height:1px;background:var(--border);margin:12px 0;"></div><div class="settings-item" id="setLogout"><span>🚪</span><span style="color:var(--accent);">выйти из аккаунта</span></div>`;
     document.querySelectorAll('#themeSwitch .switch-option').forEach(btn => btn.addEventListener('click', function() { const t = this.dataset.theme; document.querySelectorAll('#themeSwitch .switch-option').forEach(b => b.classList.remove('active')); this.classList.add('active'); document.querySelector('#themeSwitch .switch-slider').classList.toggle('right', t === 'light'); document.body.classList.toggle('theme-light', t === 'light'); localStorage.setItem('zc_theme', t); }));
-    $('setBankInfo').addEventListener('click', () => alert('🏦 Zima.Bank\n\n• Кликер: +монеты за клик\n• Улучшения кликера: ×2 стоимости\n• Пассивный доход: +монеты/сек\n• Вклад: 2% каждые 30 секунд\n• Сбережения: защищённый счёт от 500 🪙\n• Переводы: мгновенные между пользователями'));
+    $('setBankInfo').addEventListener('click', () => alert('🏦 Zima.Bank\n\n• Кликер: +монеты за клик\n• Улучшения: ×2 стоимости\n• Пассивный доход: +монеты/сек\n• Вклад: 2% каждые 30с\n• Сбережения: от 500 🪙\n• Переводы: мгновенные'));
     $('setAbout').addEventListener('click', () => switchPage('about'));
     $('setLogout').addEventListener('click', () => { if (confirm('выйти?')) { localStorage.removeItem('zocial_session'); location.reload(); } });
 }
@@ -429,4 +457,4 @@ $('addContactBtn').addEventListener('click', () => { $('searchPanel').classList.
 })();
 </script>
 </body>
-                                                                                                                                                                                                                                                                                                  </html>
+</html>
