@@ -1,13 +1,22 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.static(path.join(__dirname)));
 
-const DB = { users: {}, posts: [], chats: {}, bank: {}, subscriptions: {} };
+// База данных
+const DB = {
+  users: {},
+  posts: [],
+  chats: {},
+  bank: {},
+  subscriptions: {}
+};
 
+// Пассивный доход
 setInterval(() => {
   Object.keys(DB.bank).forEach(username => {
     const b = DB.bank[username];
@@ -16,22 +25,26 @@ setInterval(() => {
     if (b.depositAmount > 0 && b.depositTimer && Date.now() - b.depositTimer >= 30000) {
       const cycles = Math.floor((Date.now() - b.depositTimer) / 30000);
       const interest = Math.floor(b.depositAmount * 0.02 * cycles);
-      if (interest > 0) { b.balance += interest; b.depositTimer = Date.now(); b.history.push({ type: 'проценты', amount: interest, time: new Date().toLocaleTimeString() }); }
+      if (interest > 0) { b.balance += interest; b.depositTimer = Date.now(); }
     }
   });
 }, 1000);
 
+// Регистрация
 app.post('/api/register', (req, res) => {
   const { name, username, password } = req.body;
   if (!name || !username || !password) return res.json({ error: 'заполните все поля' });
   if (username.length < 3) return res.json({ error: 'никнейм мин. 3 символа' });
   if (DB.users[username]) return res.json({ error: 'никнейм занят' });
+  
   DB.users[username] = { name, username, password, avatar: null, bio: '' };
   DB.bank[username] = { balance: 100, clickLevel: 1, passiveLevel: 0, depositAmount: 0, depositTimer: 0, history: [] };
   DB.subscriptions[username] = [];
+  
   res.json({ success: true, user: { name, username } });
 });
 
+// Вход
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   const user = DB.users[username];
@@ -39,6 +52,7 @@ app.post('/api/login', (req, res) => {
   res.json({ success: true, user: { name: user.name, username, avatar: user.avatar, bio: user.bio } });
 });
 
+// Обновление профиля
 app.post('/api/profile/update', (req, res) => {
   const { username, name, bio, avatar } = req.body;
   const user = DB.users[username];
@@ -49,22 +63,39 @@ app.post('/api/profile/update', (req, res) => {
   res.json({ success: true, user: { name: user.name, username, avatar: user.avatar, bio: user.bio } });
 });
 
-app.get('/api/posts', (req, res) => res.json([...DB.posts].sort((a, b) => b.timestamp - a.timestamp)));
+// Посты
+app.get('/api/posts', (req, res) => {
+  const sorted = [...DB.posts].sort((a, b) => b.timestamp - a.timestamp);
+  res.json(sorted);
+});
 
 app.post('/api/posts', (req, res) => {
   const { username, text } = req.body;
-  if (!text) return res.json({ error: 'пусто' });
-  const post = { id: 'p' + Date.now(), username, text, time: 'только что', timestamp: Date.now(), likes: 0, likedBy: [], comments: [] };
+  if (!text) return res.json({ error: 'пустой пост' });
+  
+  const post = {
+    id: 'p' + Date.now(),
+    username,
+    text,
+    time: 'только что',
+    timestamp: Date.now(),
+    likes: 0,
+    likedBy: [],
+    comments: []
+  };
+  
   DB.posts.push(post);
-  res.json(post);
+  res.json({ success: true, post });
 });
 
 app.post('/api/posts/:id/like', (req, res) => {
   const post = DB.posts.find(p => p.id === req.params.id);
   if (!post) return res.json({ error: 'не найден' });
+  
   const idx = post.likedBy.indexOf(req.body.username);
-  idx > -1 ? post.likedBy.splice(idx, 1) : post.likedBy.push(req.body.username);
-  post.likes = post.likedBy.length;
+  if (idx > -1) { post.likedBy.splice(idx, 1); post.likes--; }
+  else { post.likedBy.push(req.body.username); post.likes++; }
+  
   res.json({ likes: post.likes, liked: post.likedBy.includes(req.body.username) });
 });
 
@@ -82,6 +113,7 @@ app.delete('/api/posts/:id', (req, res) => {
   res.json({ success: true });
 });
 
+// Банк
 app.get('/api/bank/:username', (req, res) => {
   if (!DB.bank[req.params.username]) DB.bank[req.params.username] = { balance: 100, clickLevel: 1, passiveLevel: 0, depositAmount: 0, depositTimer: 0, history: [] };
   res.json(DB.bank[req.params.username]);
@@ -94,15 +126,20 @@ app.post('/api/bank/deposit', (req, res) => { const b = DB.bank[req.body.usernam
 app.post('/api/bank/withdraw', (req, res) => { const b = DB.bank[req.body.username]; if (!b.depositAmount) return res.json({ error: 'нет вклада' }); const amount = b.depositAmount; b.balance += amount; b.depositAmount = 0; b.depositTimer = 0; b.history.push({ type: 'снятие', amount, time: new Date().toLocaleTimeString() }); res.json({ success: true }); });
 app.post('/api/bank/transfer', (req, res) => { const { from, to, amount } = req.body; const s = DB.bank[from], r = DB.bank[to]; if (!s || !r) return res.json({ error: 'не найден' }); if (s.balance < amount) return res.json({ error: 'недостаточно средств' }); s.balance -= amount; r.balance += amount; s.history.push({ type: 'перевод', amount: -amount, time: new Date().toLocaleTimeString() }); r.history.push({ type: 'получено', amount, time: new Date().toLocaleTimeString() }); if (!DB.chats[to]) DB.chats[to] = {}; if (!DB.chats[from]) DB.chats[from] = {}; const msg = { from, text: `💰 перевёл ${amount} 🪙`, time: new Date().toLocaleTimeString() }; if (!DB.chats[to][from]) DB.chats[to][from] = []; if (!DB.chats[from][to]) DB.chats[from][to] = []; DB.chats[to][from].push(msg); DB.chats[from][to].push(msg); res.json({ success: true }); });
 
+// Чаты
 app.get('/api/chat/:username', (req, res) => res.json(DB.chats[req.params.username] || {}));
 app.post('/api/chat/send', (req, res) => { const { from, to, text } = req.body; if (!DB.chats[to]) DB.chats[to] = {}; if (!DB.chats[from]) DB.chats[from] = {}; if (!DB.chats[to][from]) DB.chats[to][from] = []; if (!DB.chats[from][to]) DB.chats[from][to] = []; const msg = { from, text, time: new Date().toLocaleTimeString() }; DB.chats[to][from].push(msg); DB.chats[from][to].push(msg); res.json({ success: true }); });
 
+// Подписки
 app.get('/api/subs/:username', (req, res) => res.json(DB.subscriptions[req.params.username] || []));
 app.post('/api/subs/toggle', (req, res) => { const { subscriber, target } = req.body; if (!DB.subscriptions[subscriber]) DB.subscriptions[subscriber] = []; const idx = DB.subscriptions[subscriber].indexOf(target); idx > -1 ? DB.subscriptions[subscriber].splice(idx, 1) : DB.subscriptions[subscriber].push(target); res.json({ subscribed: idx === -1 }); });
 
-app.get('/api/users', (req, res) => res.json(Object.keys(DB.users).map(u => ({ username: u, name: DB.users[u].name, avatar: DB.users[u].avatar, bio: DB.users[u].bio }))));
+// Пользователи (для поиска)
+app.get('/api/users', (req, res) => res.json(Object.keys(DB.users).map(u => ({ username: u, name: DB.users[u].name, avatar: DB.users[u].avatar }))));
+app.get('/api/users/search', (req, res) => { const q = (req.query.q || '').toLowerCase(); if (!q) return res.json([]); const results = Object.keys(DB.users).filter(u => u.includes(q) || DB.users[u].name.toLowerCase().includes(q)).slice(0, 10).map(u => ({ username: u, name: DB.users[u].name, avatar: DB.users[u].avatar })); res.json(results); });
 app.get('/api/users/:username', (req, res) => { const u = DB.users[req.params.username]; if (!u) return res.json({ error: 'не найден' }); res.json({ username: req.params.username, name: u.name, avatar: u.avatar, bio: u.bio }); });
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+
 module.exports = app;
 if (require.main === module) app.listen(process.env.PORT || 3000, () => console.log('Zocial OK'));
