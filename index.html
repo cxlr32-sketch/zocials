@@ -11,10 +11,7 @@
             --border: rgba(37,99,235,0.15); --radius: 20px; --accent: #f97316;
             --gold: #f59e0b; --green: #10b981; --safe-bottom: env(safe-area-inset-bottom,16px);
         }
-        .theme-light {
-            --bg: #f1f5f9; --surface: #ffffff; --surface2: #e2e8f0;
-            --text: #1e293b; --text-secondary: #64748b; --border: rgba(37,99,235,0.2);
-        }
+        .theme-light { --bg: #f1f5f9; --surface: #ffffff; --surface2: #e2e8f0; --text: #1e293b; --text-secondary: #64748b; --border: rgba(37,99,235,0.2); }
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         body { font-family:'Segoe UI',sans-serif; background:var(--bg); color:var(--text); display:flex; justify-content:center; align-items:center; min-height:100vh; overflow:hidden; }
         .app { width:100%; max-width:430px; height:100vh; height:100dvh; display:flex; flex-direction:column; background:var(--bg); position:relative; overflow:hidden; }
@@ -37,7 +34,7 @@
         .header { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; background:var(--surface); border-bottom:1px solid var(--border); z-index:100; }
         .logo { font-size:1.6rem; font-weight:800; color:var(--primary-light); }
         .icon-btn { width:38px; height:38px; border-radius:50%; background:var(--surface2); border:1px solid var(--border); color:var(--primary-light); font-size:1.2rem; display:flex; align-items:center; justify-content:center; cursor:pointer; }
-        .main-content { flex:1; overflow-y:hidden; position:relative; }
+        .main-content { flex:1; overflow:hidden; position:relative; }
         .pages-container { display:flex; width:100%; height:100%; transition:transform 0.3s ease; }
         .page { min-width:100%; height:100%; overflow-y:auto; padding:16px; }
         .page::-webkit-scrollbar { width:0; }
@@ -52,12 +49,13 @@
         .post-actions { display:flex; gap:20px; padding-top:8px; border-top:1px solid var(--border); }
         .post-action { display:flex; align-items:center; gap:6px; color:var(--primary-light); cursor:pointer; background:none; border:none; padding:6px 10px; border-radius:20px; font-size:0.85rem; }
         .post-action.liked { color:var(--accent); }
-        .verified-badge { display:inline-block; width:16px; height:16px; background:var(--primary); border-radius:50%; font-size:0.6rem; color:white; text-align:center; line-height:16px; margin-left:4px; }
+        .verified-badge { display:inline-block; width:16px; height:16px; background:var(--primary); border-radius:50%; font-size:0.6rem; color:white; text-align:center; line-height:16px; margin-left:2px; flex-shrink:0; }
         .like-animation { position:fixed; pointer-events:none; z-index:999; font-size:2rem; animation:likeFloat 0.8s ease-out forwards; }
         @keyframes likeFloat { 0%{opacity:1;transform:translateY(0) scale(1);} 50%{opacity:1;transform:translateY(-40px) scale(1.3);} 100%{opacity:0;transform:translateY(-80px) scale(0.8);} }
         .profile-header { display:flex; align-items:center; gap:20px; padding:20px 0; }
         .profile-avatar { width:100px; height:100px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--primary-light)); display:flex; align-items:center; justify-content:center; font-size:2.8rem; font-weight:700; flex-shrink:0; overflow:hidden; cursor:pointer; }
         .profile-avatar img { width:100%; height:100%; object-fit:cover; }
+        .profile-info { flex:1; }
         .profile-name { font-size:1.5rem; font-weight:700; display:flex; align-items:center; gap:6px; }
         .profile-username { color:var(--primary-light); }
         .profile-stats { display:flex; justify-content:space-around; margin:20px 0; }
@@ -68,10 +66,6 @@
         .btn-primary { background:var(--primary); color:white; }
         .btn-outline { background:transparent; border:2px solid var(--primary); color:var(--primary-light); }
         .btn:active { transform:scale(0.95); }
-        .chat-list-item { display:flex; align-items:center; gap:12px; padding:14px; background:var(--surface); border-radius:14px; margin-bottom:8px; cursor:pointer; border:1px solid var(--border); }
-        .chat-avatar-sm { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--primary-light)); display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0; }
-        .chat-list-name { font-weight:600; }
-        .add-contact-btn { width:100%; padding:14px; background:var(--surface); border:2px dashed var(--primary); border-radius:14px; color:var(--primary-light); cursor:pointer; margin-bottom:12px; }
         .chat-screen { position:fixed; inset:0; background:var(--bg); z-index:200; display:flex; flex-direction:column; transform:translateX(100%); transition:0.3s; max-width:430px; margin:0 auto; }
         .chat-screen.open { transform:translateX(0); }
         .chat-nav { display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--surface); }
@@ -113,6 +107,16 @@
         .onboarding-dot.active { background:var(--primary); width:24px; border-radius:5px; }
         .confetti { position:fixed; pointer-events:none; z-index:1000; font-size:1.5rem; animation:confettiFall 2.5s ease-out forwards; }
         @keyframes confettiFall { 0%{opacity:1;transform:translateY(-100px) rotate(0deg);} 100%{opacity:0;transform:translateY(100vh) rotate(720deg);} }
+        .search-container { position:sticky; top:0; z-index:10; padding-bottom:12px; }
+        .search-input { width:100%; padding:12px 16px; border-radius:25px; border:2px solid var(--border); background:var(--surface2); color:var(--text); font-size:0.9rem; outline:none; }
+        .search-input:focus { border-color:var(--primary); }
+        .search-results { position:absolute; top:100%; left:0; right:0; background:var(--surface); border-radius:14px; max-height:300px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,0.3); display:none; }
+        .search-results.show { display:block; }
+        .search-item { padding:12px 16px; cursor:pointer; display:flex; align-items:center; gap:10px; }
+        .search-item:hover { background:var(--surface2); }
+        .search-item-avatar { width:36px; height:36px; border-radius:50%; background:var(--primary); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem; flex-shrink:0; }
+        .search-item-name { font-weight:600; }
+        .search-item-username { color:var(--primary-light); font-size:0.8rem; }
         @media (min-width:431px) { .app,.login-screen { border-radius:30px; height:95vh; } .chat-screen { border-radius:30px; } }
     </style>
 </head>
@@ -144,9 +148,15 @@
         <div class="header"><div class="logo">❄️ zocial</div><div class="header-actions"><button class="icon-btn" id="searchBtn">🔍</button></div></div>
         <div class="main-content">
             <div class="pages-container" id="pagesContainer">
-                <div class="page" id="feedPage"><div id="feedPosts"></div></div>
+                <div class="page" id="feedPage">
+                    <div class="search-container" id="searchContainer" style="display:none;">
+                        <input type="text" class="search-input" id="searchInput" placeholder="поиск по никнейму или имени..." autocomplete="off">
+                        <div class="search-results" id="searchResults"></div>
+                    </div>
+                    <div id="feedPosts"></div>
+                </div>
                 <div class="page" id="bankPage"><div id="bankContent"></div></div>
-                <div class="page" id="chatsPage"><h3 style="color:var(--primary-light);margin-bottom:16px;">💬 сообщения</h3><button class="add-contact-btn" id="addContactBtn">🔍 найти пользователя</button><div id="chatListContainer"></div></div>
+                <div class="page" id="chatsPage"><h3 style="color:var(--primary-light);margin-bottom:16px;">💬 сообщения</h3><button class="add-contact-btn" style="width:100%;padding:14px;background:var(--surface);border:2px dashed var(--primary);border-radius:14px;color:var(--primary-light);cursor:pointer;margin-bottom:12px;" id="addContactBtn">🔍 найти пользователя</button><div id="chatListContainer"></div></div>
                 <div class="page" id="profilePage"><div id="profileContent"></div></div>
                 <div class="page" id="contactPage"><div id="contactContent"></div></div>
                 <div class="page" id="settingsPage"><div id="settingsContent"></div></div>
@@ -187,8 +197,9 @@ let currentUser = null, globalChats = {}, activeChatId = null, activeCommentsPos
 function esc(t) { return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[c]); }
 function animateLike(x, y) { const el = document.createElement('div'); el.className = 'like-animation'; el.textContent = '❤️'; el.style.left = x + 'px'; el.style.top = y + 'px'; document.body.appendChild(el); setTimeout(() => el.remove(), 800); }
 function floatCoin(x, y, amount) { const el = document.createElement('div'); el.className = 'float-text'; el.textContent = '+' + amount + ' 🪙'; el.style.left = x + 'px'; el.style.top = y + 'px'; document.body.appendChild(el); setTimeout(() => el.remove(), 1000); }
+function isVerified(username) { return username === 'snzhk'; }
 
-// Переход между страницами с анимацией
+// Переход между страницами
 function switchPage(page) {
     currentPage = page;
     const pages = ['feed', 'bank', 'chats', 'profile', 'contact', 'settings'];
@@ -197,7 +208,8 @@ function switchPage(page) {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     const nav = document.querySelector(`[data-page="${page}"]`);
     if (nav) nav.classList.add('active');
-    $('fabCreatePost').classList.toggle('hidden', !['feed'].includes(page));
+    $('fabCreatePost').classList.toggle('hidden', page !== 'feed');
+    $('searchContainer').style.display = page === 'feed' ? 'block' : 'none';
     if (page === 'feed') loadFeed();
     else if (page === 'bank') loadBank();
     else if (page === 'chats') loadChats();
@@ -227,27 +239,13 @@ function showWelcome(cb) {
 }
 
 function showAvatarSetup(cb) {
-    const modal = $('editProfileModal');
-    modal.classList.add('open');
-    $('editNameInput').value = currentUser.name;
-    $('editBioInput').value = '';
-    const avatarPreview = $('editAvatarPreview');
-    avatarPreview.textContent = currentUser.name[0];
+    const modal = $('editProfileModal'); modal.classList.add('open');
+    $('editNameInput').value = currentUser.name; $('editBioInput').value = '';
+    const av = $('editAvatarPreview'); av.textContent = currentUser.name[0];
     let avatarData = null;
-
     $('changeAvatarBtn').onclick = () => $('avatarInput').click();
-    $('avatarInput').onchange = () => {
-        const f = $('avatarInput').files[0]; if (!f) return;
-        const r = new FileReader(); r.onload = e => { avatarData = e.target.result; avatarPreview.innerHTML = `<img src="${avatarData}" style="width:100%;height:100%;object-fit:cover;">`; }; r.readAsDataURL(f);
-    };
-
-    $('saveEditBtn').onclick = async () => {
-        const name = $('editNameInput').value.trim() || currentUser.name;
-        const bio = $('editBioInput').value.trim();
-        const r = await req('POST', '/profile/update', { username: currentUser.username, name, bio, avatar: avatarData });
-        if (!r.error) { currentUser = r.user; currentUser.username = currentUser.username; localStorage.setItem('zocial_session', JSON.stringify(currentUser)); modal.classList.remove('open'); if (cb) cb(); }
-    };
-
+    $('avatarInput').onchange = () => { const f = $('avatarInput').files[0]; if (!f) return; const r = new FileReader(); r.onload = e => { avatarData = e.target.result; av.innerHTML = `<img src="${avatarData}" style="width:100%;height:100%;object-fit:cover;">`; }; r.readAsDataURL(f); };
+    $('saveEditBtn').onclick = async () => { const name = $('editNameInput').value.trim() || currentUser.name; const bio = $('editBioInput').value.trim(); const r = await req('POST', '/profile/update', { username: currentUser.username, name, bio, avatar: avatarData }); if (!r.error) { currentUser = r.user; currentUser.username = currentUser.username; localStorage.setItem('zocial_session', JSON.stringify(currentUser)); modal.classList.remove('open'); if (cb) cb(); } };
     $('cancelEditBtn').onclick = () => { modal.classList.remove('open'); if (cb) cb(); };
 }
 
@@ -272,14 +270,38 @@ async function register() {
     showWelcome(() => { $('mainApp').classList.add('visible'); switchPage('feed'); loadFeed(); loadChats(); });
 }
 
+// ПОИСК
+$('searchBtn').addEventListener('click', () => {
+    const container = $('searchContainer');
+    if (container.style.display === 'none') { container.style.display = 'block'; $('searchInput').focus(); }
+    else { container.style.display = 'none'; }
+});
+let searchTimeout;
+$('searchInput').addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+        const q = $('searchInput').value.trim();
+        if (!q) { $('searchResults').classList.remove('show'); return; }
+        const results = await req('GET', '/users/search?q=' + encodeURIComponent(q));
+        $('searchResults').innerHTML = results.slice(0, 8).map(u => `
+            <div class="search-item" data-u="${u.username}">
+                <div class="search-item-avatar">${u.avatar ? `<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : u.name[0]}</div>
+                <div><div class="search-item-name">${esc(u.name)}</div><div class="search-item-username">@${esc(u.username)}${isVerified(u.username)?' <span class="verified-badge">✓</span>':''}</div></div>
+            </div>`).join('');
+        $('searchResults').classList.add('show');
+        $('searchResults').querySelectorAll('.search-item').forEach(el => el.addEventListener('click', () => { $('searchResults').classList.remove('show'); $('searchInput').value = ''; openContact(el.dataset.u); }));
+    }, 300);
+});
+document.addEventListener('click', (e) => { if (!$('searchContainer').contains(e.target) && e.target !== $('searchBtn')) { $('searchResults').classList.remove('show'); } });
+
 // ЛЕНТА
 async function loadFeed() { $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;">загрузка...</div>'; const posts = await req('GET', '/posts'); $('feedPosts').innerHTML = ''; if (!posts?.length) { $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;">пока нет постов</div>'; return; } posts.forEach(post => renderPost(post, $('feedPosts'))); }
 function renderPost(post, container, showDelete = false) {
     const card = document.createElement('div'); card.className = 'post-card';
     const liked = post.likedBy?.includes(currentUser?.username);
-    const isVerified = post.username === 'snzhk';
+    const verified = isVerified(post.username);
     card.innerHTML = `${showDelete && post.username === currentUser.username ? `<button style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--text-secondary);cursor:pointer;" data-pid="${post.id}">✕</button>` : ''}
-        <div class="post-header"><div class="post-avatar" id="pa-${post.id}">${(post.username||'?')[0]}</div><div><div class="post-username">@${esc(post.username)}${isVerified ? '<span class="verified-badge">✓</span>' : ''}</div><div class="post-time">${post.time||''}</div></div></div>
+        <div class="post-header"><div class="post-avatar" id="pa-${post.id}">${(post.username||'?')[0]}</div><div><div class="post-username">@${esc(post.username)}${verified ? '<span class="verified-badge">✓</span>' : ''}</div><div class="post-time">${post.time||''}</div></div></div>
         <div class="post-text">${esc(post.text||'')}</div>
         <div class="post-actions"><button class="post-action like-btn ${liked?'liked':''}" data-pid="${post.id}">${liked?'❤️':'🤍'} ${post.likes||0}</button><button class="post-action cmt-btn" data-pid="${post.id}">💬 ${(post.comments||[]).length}</button></div>`;
     card.querySelector('.post-avatar').addEventListener('click', () => openContact(post.username));
@@ -301,7 +323,7 @@ $('cancelPostBtn').addEventListener('click', () => $('createPostModal').classLis
 $('publishPostBtn').addEventListener('click', async () => { const text = $('postTextInput').value.trim(); if (!text) return; await req('POST', '/posts', { username: currentUser.username, text }); $('createPostModal').classList.remove('open'); switchPage('feed'); loadFeed(); });
 
 // ЧАТЫ
-async function loadChats() { if (!currentUser) return; const result = await req('GET', '/chat/' + currentUser.username); globalChats = result; $('chatListContainer').innerHTML = ''; const users = Object.keys(result); if (!users.length) { $('chatListContainer').innerHTML = '<div style="text-align:center;padding:40px;">нет сообщений</div>'; return; } users.forEach(u => { const msgs = result[u] || []; const div = document.createElement('div'); div.className = 'chat-list-item'; div.innerHTML = `<div class="chat-avatar-sm">${u[0].toUpperCase()}</div><div><div class="chat-list-name">@${esc(u)}</div><div style="font-size:0.8rem;color:var(--text-secondary);">${msgs.length?msgs[msgs.length-1].text:''}</div></div>`; div.addEventListener('click', () => openChat(u)); $('chatListContainer').appendChild(div); }); }
+async function loadChats() { if (!currentUser) return; const result = await req('GET', '/chat/' + currentUser.username); globalChats = result; $('chatListContainer').innerHTML = ''; const users = Object.keys(result); if (!users.length) { $('chatListContainer').innerHTML = '<div style="text-align:center;padding:40px;">нет сообщений</div>'; return; } users.forEach(u => { const msgs = result[u] || []; const div = document.createElement('div'); div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px;background:var(--surface);border-radius:14px;margin-bottom:8px;cursor:pointer;border:1px solid var(--border);'; div.innerHTML = `<div class="post-avatar" style="width:48px;height:48px;">${u[0].toUpperCase()}</div><div><div style="font-weight:600;">@${esc(u)}${isVerified(u)?' <span class="verified-badge">✓</span>':''}</div><div style="font-size:0.8rem;color:var(--text-secondary);">${msgs.length?msgs[msgs.length-1].text:''}</div></div>`; div.addEventListener('click', () => openChat(u)); $('chatListContainer').appendChild(div); }); }
 function openChat(u) { activeChatId = u; $('chatScreenName').textContent = '@' + u; renderChatMsgs(); $('chatScreen').classList.add('open'); }
 function closeChat() { $('chatScreen').classList.remove('open'); activeChatId = null; loadChats(); }
 function renderChatMsgs() { $('chatMessages').innerHTML = ''; if (!activeChatId || !globalChats[activeChatId]) return; globalChats[activeChatId].forEach(m => { const b = document.createElement('div'); b.className = 'msg-bubble ' + (m.from === currentUser.username ? 'outgoing' : 'incoming'); b.textContent = m.text; $('chatMessages').appendChild(b); }); }
@@ -319,16 +341,16 @@ $('confirmTransferBtn').addEventListener('click', async () => { const to = $('tr
 $('cancelTransferBtn').addEventListener('click', () => $('bankTransferModal').classList.remove('open'));
 
 // ПРОФИЛЬ
-async function loadProfile() { const bank = await req('GET', '/bank/' + currentUser.username); const posts = await req('GET', '/posts'); const myPosts = posts.filter(p => p.username === currentUser.username); const subs = await req('GET', '/subs/' + currentUser.username); const allUsers = await req('GET', '/users'); const followers = allUsers.filter(u => subs.includes(u.username)).length; const isVerified = currentUser.username === 'snzhk'; $('profileContent').innerHTML = `<div class="profile-header"><div class="profile-avatar" id="profileAvatarMain">${(currentUser.avatar?`<img src="${currentUser.avatar}">`:currentUser.name[0])}</div><div class="profile-info"><div class="profile-name">${esc(currentUser.name)}${isVerified?'<span class="verified-badge" style="width:20px;height:20px;font-size:0.8rem;line-height:20px;">✓</span>':''}</div><div class="profile-username">@${esc(currentUser.username)}</div></div></div><div class="profile-stats"><div class="stat-item"><div class="stat-number">${myPosts.length}</div><div class="stat-label">постов</div></div><div class="stat-item" id="statSubs"><div class="stat-number">${subs.length}</div><div class="stat-label">подписок</div></div><div class="stat-item" id="statFollowers"><div class="stat-number">${followers}</div><div class="stat-label">подписчиков</div></div><div class="stat-item"><div class="stat-number">${bank.balance.toLocaleString()}</div><div class="stat-label">🪙</div></div></div><div style="display:flex;gap:10px;margin:16px 0;"><button class="btn btn-primary" id="profileEditBtn">✏️ редактировать</button><button class="btn btn-outline" id="profileSettingsBtn">⚙️ настройки</button></div><h4 style="color:var(--primary-light);margin:16px 0;">мои посты</h4><div id="myPostsList"></div>`; const c = $('myPostsList'); if (!myPosts.length) c.innerHTML = '<div style="text-align:center;padding:20px;">нет постов</div>'; else myPosts.forEach(p => renderPost(p, c, true)); $('profileEditBtn').addEventListener('click', () => { openEditProfile(); }); $('profileSettingsBtn').addEventListener('click', () => switchPage('settings')); $('statSubs').addEventListener('click', () => showUserList('подписки', subs)); $('statFollowers').addEventListener('click', () => showUserList('подписчики', allUsers.filter(u => subs.includes(u.username)).map(u => u.username))); }
+async function loadProfile() { const bank = await req('GET', '/bank/' + currentUser.username); const posts = await req('GET', '/posts'); const myPosts = posts.filter(p => p.username === currentUser.username); const subs = await req('GET', '/subs/' + currentUser.username); const allUsers = await req('GET', '/users'); const followers = allUsers.filter(u => subs.includes(u.username)).length; const verified = isVerified(currentUser.username); $('profileContent').innerHTML = `<div class="profile-header"><div class="profile-avatar" id="profileAvatarMain">${(currentUser.avatar?`<img src="${currentUser.avatar}">`:currentUser.name[0])}</div><div class="profile-info"><div class="profile-name">${esc(currentUser.name)}${verified?'<span class="verified-badge" style="width:20px;height:20px;font-size:0.8rem;line-height:20px;">✓</span>':''}</div><div class="profile-username">@${esc(currentUser.username)}</div></div></div><div class="profile-stats"><div class="stat-item"><div class="stat-number">${myPosts.length}</div><div class="stat-label">постов</div></div><div class="stat-item" id="statSubs"><div class="stat-number">${subs.length}</div><div class="stat-label">подписок</div></div><div class="stat-item" id="statFollowers"><div class="stat-number">${followers}</div><div class="stat-label">подписчиков</div></div><div class="stat-item"><div class="stat-number">${bank.balance.toLocaleString()}</div><div class="stat-label">🪙</div></div></div><div style="display:flex;gap:10px;margin:16px 0;"><button class="btn btn-primary" id="profileEditBtn">✏️ редактировать</button><button class="btn btn-outline" id="profileSettingsBtn">⚙️ настройки</button></div><h4 style="color:var(--primary-light);margin:16px 0;">мои посты</h4><div id="myPostsList"></div>`; const c = $('myPostsList'); if (!myPosts.length) c.innerHTML = '<div style="text-align:center;padding:20px;">нет постов</div>'; else myPosts.forEach(p => renderPost(p, c, true)); $('profileEditBtn').addEventListener('click', openEditProfile); $('profileSettingsBtn').addEventListener('click', () => switchPage('settings')); $('statSubs').addEventListener('click', () => showUserList('подписки', subs)); $('statFollowers').addEventListener('click', () => showUserList('подписчики', allUsers.filter(u => subs.includes(u.username)).map(u => u.username))); }
 
 // КОНТАКТ
-async function openContact(username) { if (username === currentUser.username) { switchPage('profile'); return; } const user = await req('GET', '/users/' + username); if (user.error) return; const subs = await req('GET', '/subs/' + currentUser.username); const isSub = subs.includes(username); const isVerified = username === 'snzhk'; switchPage('contact'); $('contactContent').innerHTML = `<div class="profile-header"><div class="profile-avatar">${user.avatar?`<img src="${user.avatar}">`:user.name[0]}</div><div class="profile-info"><div class="profile-name">${esc(user.name)}${isVerified?'<span class="verified-badge" style="width:20px;height:20px;font-size:0.8rem;line-height:20px;">✓</span>':''}</div><div class="profile-username">@${esc(username)}</div></div></div><div style="display:flex;gap:10px;margin:16px 0;"><button class="btn btn-primary" id="contactChatBtn">💬 написать</button><button class="btn btn-outline" id="contactSubBtn">${isSub?'✅ подписан':'➕ подписаться'}</button><button class="btn btn-outline" id="contactBackBtn">← назад</button></div>`; $('contactChatBtn').addEventListener('click', () => openChat(username)); $('contactSubBtn').addEventListener('click', async () => { const r = await req('POST', '/subs/toggle', { subscriber: currentUser.username, target: username }); $('contactSubBtn').textContent = r.subscribed ? '✅ подписан' : '➕ подписаться'; }); $('contactBackBtn').addEventListener('click', () => switchPage('feed')); }
+async function openContact(username) { if (username === currentUser.username) { switchPage('profile'); return; } const user = await req('GET', '/users/' + username); if (user.error) return; const subs = await req('GET', '/subs/' + currentUser.username); const isSub = subs.includes(username); const verified = isVerified(username); switchPage('contact'); $('contactContent').innerHTML = `<div class="profile-header"><div class="profile-avatar">${user.avatar?`<img src="${user.avatar}">`:user.name[0]}</div><div class="profile-info"><div class="profile-name">${esc(user.name)}${verified?'<span class="verified-badge" style="width:20px;height:20px;font-size:0.8rem;line-height:20px;">✓</span>':''}</div><div class="profile-username">@${esc(username)}</div></div></div><div style="display:flex;gap:10px;margin:16px 0;"><button class="btn btn-primary" id="contactChatBtn">💬 написать</button><button class="btn btn-outline" id="contactSubBtn">${isSub?'✅ подписан':'➕ подписаться'}</button><button class="btn btn-outline" id="contactBackBtn">← назад</button></div>`; $('contactChatBtn').addEventListener('click', () => openChat(username)); $('contactSubBtn').addEventListener('click', async () => { const r = await req('POST', '/subs/toggle', { subscriber: currentUser.username, target: username }); $('contactSubBtn').textContent = r.subscribed ? '✅ подписан' : '➕ подписаться'; }); $('contactBackBtn').addEventListener('click', () => switchPage('feed')); }
 
 // РЕДАКТИРОВАНИЕ ПРОФИЛЯ
 function openEditProfile() { $('editNameInput').value = currentUser.name; $('editBioInput').value = currentUser.bio || ''; const av = $('editAvatarPreview'); if (currentUser.avatar) av.innerHTML = `<img src="${currentUser.avatar}" style="width:100%;height:100%;object-fit:cover;">`; else av.textContent = currentUser.name[0]; let avatarData = null; $('changeAvatarBtn').onclick = () => $('avatarInput').click(); $('avatarInput').onchange = () => { const f = $('avatarInput').files[0]; if (!f) return; const r = new FileReader(); r.onload = e => { avatarData = e.target.result; av.innerHTML = `<img src="${avatarData}" style="width:100%;height:100%;object-fit:cover;">`; }; r.readAsDataURL(f); }; $('saveEditBtn').onclick = async () => { const name = $('editNameInput').value.trim() || currentUser.name; const bio = $('editBioInput').value.trim(); const r = await req('POST', '/profile/update', { username: currentUser.username, name, bio, avatar: avatarData }); if (!r.error) { currentUser = r.user; currentUser.username = currentUser.username; localStorage.setItem('zocial_session', JSON.stringify(currentUser)); $('editProfileModal').classList.remove('open'); switchPage('profile'); loadProfile(); } }; $('cancelEditBtn').onclick = () => $('editProfileModal').classList.remove('open'); $('editProfileModal').classList.add('open'); }
 
-// СПИСОК ПОЛЬЗОВАТЕЛЕЙ
-async function showUserList(title, users) { $('userListTitle').textContent = title; $('userListContent').innerHTML = users.map(u => `<div class="settings-item" style="cursor:pointer;" data-u="${u}">@${esc(u)}</div>`).join(''); $('userListContent').querySelectorAll('.settings-item').forEach(el => el.addEventListener('click', () => { $('userListModal').classList.remove('open'); openContact(el.dataset.u); })); $('userListModal').classList.add('open'); }
+// СПИСОК
+async function showUserList(title, users) { $('userListTitle').textContent = title; $('userListContent').innerHTML = users.map(u => `<div class="settings-item" style="cursor:pointer;" data-u="${u}">@${esc(u)}${isVerified(u)?' <span class="verified-badge">✓</span>':''}</div>`).join(''); $('userListContent').querySelectorAll('.settings-item').forEach(el => el.addEventListener('click', () => { $('userListModal').classList.remove('open'); openContact(el.dataset.u); })); $('userListModal').classList.add('open'); }
 $('closeUserListBtn').addEventListener('click', () => $('userListModal').classList.remove('open'));
 
 // НАСТРОЙКИ
@@ -338,8 +360,7 @@ function loadSettings() { $('settingsContent').innerHTML = `<h3 style="color:var
 document.querySelectorAll('.login-tab').forEach(tab => tab.addEventListener('click', function() { document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active')); this.classList.add('active'); document.querySelector('.login-tab-slider').classList.toggle('right', this.dataset.tab === 'register'); $('loginFormBlock').classList.toggle('hidden', this.dataset.tab === 'register'); $('registerFormBlock').classList.toggle('hidden', this.dataset.tab === 'login'); }));
 $('loginSubmitBtn').addEventListener('click', login);
 $('regSubmitBtn').addEventListener('click', register);
-$('searchBtn').addEventListener('click', () => { const q = prompt('никнейм:'); if (q) openContact(q.toLowerCase()); });
-$('addContactBtn').addEventListener('click', () => { const q = prompt('никнейм:'); if (q && q !== currentUser.username) openChat(q.toLowerCase()); });
+$('addContactBtn').addEventListener('click', () => { $('searchContainer').style.display = 'block'; $('searchInput').focus(); });
 
 // АВТОВХОД
 (async () => { if (localStorage.getItem('zc_theme') === 'light') document.body.classList.add('theme-light'); const session = localStorage.getItem('zocial_session'); if (session) { try { const saved = JSON.parse(session); const r = await req('POST', '/login', { username: saved.username, password: '' }); if (r.error) throw new Error('no session'); currentUser = r.user; currentUser.username = saved.username; showApp(); } catch (e) { localStorage.removeItem('zocial_session'); $('loginScreen').classList.remove('hidden'); } } else { $('loginScreen').classList.remove('hidden'); } })();
