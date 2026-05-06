@@ -12,19 +12,31 @@ const DB = {
   posts: [],
   chats: {},
   bank: {},
-  subscriptions: {}
+  subscriptions: {},
+  verified: ['snzhk']
 };
+
+// Сохраняем посты каждые 30 секунд в памяти (они и так в памяти, просто для стабильности)
+let lastBackup = Date.now();
 
 // Пассивный доход + проценты по вкладам
 setInterval(() => {
+  const now = Date.now();
   Object.keys(DB.bank).forEach(username => {
     const b = DB.bank[username];
     if (!b) return;
-    if (b.passiveLevel > 0) b.balance += b.passiveLevel;
-    if (b.depositAmount > 0 && b.depositTimer && Date.now() - b.depositTimer >= 30000) {
-      const cycles = Math.floor((Date.now() - b.depositTimer) / 30000);
+    if (b.passiveLevel > 0) {
+      b.balance += b.passiveLevel;
+      b.history.push({ type: 'пассивный доход', amount: b.passiveLevel, time: new Date().toLocaleTimeString() });
+    }
+    if (b.depositAmount > 0 && b.depositTimer && now - b.depositTimer >= 30000) {
+      const cycles = Math.floor((now - b.depositTimer) / 30000);
       const interest = Math.floor(b.depositAmount * 0.02 * cycles);
-      if (interest > 0) { b.balance += interest; b.depositTimer = Date.now(); b.history.push({ type: 'проценты', amount: interest, time: new Date().toLocaleTimeString() }); }
+      if (interest > 0) {
+        b.balance += interest;
+        b.depositTimer = now;
+        b.history.push({ type: 'проценты по вкладу', amount: interest, time: new Date().toLocaleTimeString() });
+      }
     }
   });
 }, 1000);
@@ -106,7 +118,7 @@ app.post('/api/posts/:id/edit', (req, res) => {
   if (!post) return res.json({ error: 'пост не найден' });
   if (post.username !== req.body.username) return res.json({ error: 'не ваш пост' });
   
-  post.text = req.body.text || post.text;
+  post.text = req.body.text !== undefined ? req.body.text : post.text;
   post.media = req.body.media !== undefined ? req.body.media : post.media;
   post.mediaType = req.body.mediaType !== undefined ? req.body.mediaType : post.mediaType;
   post.edited = true;
@@ -140,6 +152,24 @@ app.delete('/api/posts/:id', (req, res) => {
   res.json({ success: true });
 });
 
+// Верификация (только для snzhk)
+app.post('/api/verify/toggle', (req, res) => {
+  const { by, target } = req.body;
+  if (by !== 'snzhk') return res.json({ error: 'нет прав' });
+  const idx = DB.verified.indexOf(target);
+  if (idx > -1) {
+    DB.verified.splice(idx, 1);
+    res.json({ verified: false });
+  } else {
+    DB.verified.push(target);
+    res.json({ verified: true });
+  }
+});
+
+app.get('/api/verified', (req, res) => {
+  res.json(DB.verified);
+});
+
 // Банк
 app.get('/api/bank/:username', (req, res) => {
   if (!DB.bank[req.params.username]) DB.bank[req.params.username] = { balance: 100, clickLevel: 1, passiveLevel: 0, depositAmount: 0, depositTimer: 0, history: [], savingsBalance: 0 };
@@ -148,11 +178,11 @@ app.get('/api/bank/:username', (req, res) => {
 
 app.post('/api/bank/click', (req, res) => { const b = DB.bank[req.body.username]; if (!b) return res.json({ error: 'нет счёта' }); b.balance += b.clickLevel; b.history.push({ type: 'клик', amount: b.clickLevel, time: new Date().toLocaleTimeString() }); res.json({ balance: b.balance }); });
 app.post('/api/bank/upgrade', (req, res) => { const b = DB.bank[req.body.username]; const cost = b.clickLevel * 2 * 50; if (b.balance < cost) return res.json({ error: 'недостаточно средств' }); b.balance -= cost; b.clickLevel++; b.history.push({ type: 'улучшение', amount: -cost, time: new Date().toLocaleTimeString() }); res.json({ balance: b.balance, clickLevel: b.clickLevel }); });
-app.post('/api/bank/passive', (req, res) => { const b = DB.bank[req.body.username]; const cost = (b.passiveLevel + 1) * 100; if (b.balance < cost) return res.json({ error: 'недостаточно средств' }); b.balance -= cost; b.passiveLevel++; b.history.push({ type: 'пассивный', amount: -cost, time: new Date().toLocaleTimeString() }); res.json({ balance: b.balance, passiveLevel: b.passiveLevel }); });
+app.post('/api/bank/passive', (req, res) => { const b = DB.bank[req.body.username]; const cost = (b.passiveLevel + 1) * 100; if (b.balance < cost) return res.json({ error: 'недостаточно средств' }); b.balance -= cost; b.passiveLevel++; b.history.push({ type: 'покупка пассивного', amount: -cost, time: new Date().toLocaleTimeString() }); res.json({ balance: b.balance, passiveLevel: b.passiveLevel }); });
 app.post('/api/bank/deposit', (req, res) => { const b = DB.bank[req.body.username]; const amount = parseInt(req.body.amount); if (!amount || amount < 100) return res.json({ error: 'мин. 100 🪙' }); if (b.balance < amount) return res.json({ error: 'недостаточно средств' }); b.balance -= amount; b.depositAmount = amount; b.depositTimer = Date.now(); b.history.push({ type: 'вклад', amount: -amount, time: new Date().toLocaleTimeString() }); res.json({ success: true }); });
-app.post('/api/bank/withdraw', (req, res) => { const b = DB.bank[req.body.username]; if (!b.depositAmount) return res.json({ error: 'нет вклада' }); const amount = b.depositAmount; b.balance += amount; b.depositAmount = 0; b.depositTimer = 0; b.history.push({ type: 'снятие', amount, time: new Date().toLocaleTimeString() }); res.json({ success: true }); });
+app.post('/api/bank/withdraw', (req, res) => { const b = DB.bank[req.body.username]; if (!b.depositAmount) return res.json({ error: 'нет вклада' }); const amount = b.depositAmount; b.balance += amount; b.depositAmount = 0; b.depositTimer = 0; b.history.push({ type: 'снятие вклада', amount, time: new Date().toLocaleTimeString() }); res.json({ success: true }); });
 app.post('/api/bank/savings/deposit', (req, res) => { const b = DB.bank[req.body.username]; const amount = parseInt(req.body.amount); if (!amount || amount < 500) return res.json({ error: 'мин. 500 🪙' }); if (b.balance < amount) return res.json({ error: 'недостаточно средств' }); b.balance -= amount; b.savingsBalance = (b.savingsBalance || 0) + amount; b.history.push({ type: 'сбережения', amount: -amount, time: new Date().toLocaleTimeString() }); res.json({ success: true, savingsBalance: b.savingsBalance }); });
-app.post('/api/bank/savings/withdraw', (req, res) => { const b = DB.bank[req.body.username]; if (!b.savingsBalance || b.savingsBalance <= 0) return res.json({ error: 'нет сбережений' }); const amount = b.savingsBalance; b.balance += amount; b.savingsBalance = 0; b.history.push({ type: 'сбережения сняты', amount, time: new Date().toLocaleTimeString() }); res.json({ success: true, savingsBalance: 0 }); });
+app.post('/api/bank/savings/withdraw', (req, res) => { const b = DB.bank[req.body.username]; if (!b.savingsBalance || b.savingsBalance <= 0) return res.json({ error: 'нет сбережений' }); const amount = b.savingsBalance; b.balance += amount; b.savingsBalance = 0; b.history.push({ type: 'снятие сбережений', amount, time: new Date().toLocaleTimeString() }); res.json({ success: true, savingsBalance: 0 }); });
 app.post('/api/bank/transfer', (req, res) => { const { from, to, amount } = req.body; const s = DB.bank[from], r = DB.bank[to]; if (!s || !r) return res.json({ error: 'пользователь не найден' }); if (s.balance < amount) return res.json({ error: 'недостаточно средств' }); s.balance -= amount; r.balance += amount; s.history.push({ type: 'перевод', amount: -amount, time: new Date().toLocaleTimeString() }); r.history.push({ type: 'получено', amount, time: new Date().toLocaleTimeString() }); if (!DB.chats[to]) DB.chats[to] = {}; if (!DB.chats[from]) DB.chats[from] = {}; const msg = { from, text: `💰 перевёл ${amount} 🪙`, time: new Date().toLocaleTimeString() }; if (!DB.chats[to][from]) DB.chats[to][from] = []; if (!DB.chats[from][to]) DB.chats[from][to] = []; DB.chats[to][from].push(msg); DB.chats[from][to].push(msg); res.json({ success: true }); });
 
 // Чаты
