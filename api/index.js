@@ -75,11 +75,24 @@ app.post('/api/profile/update', async (req, res) => {
 });
 
 // Посты
-app.get('/api/posts', async (req, res) => {
+app.post('/api/posts', async (req, res) => {
   try {
-    const { data } = await supabase.from('posts').select('*').order('timestamp', { ascending: false }).limit(100);
-    res.json(data || []);
-  } catch (e) { res.json([]); }
+    const { username, text, media, mediaType } = req.body;
+    if (!text && !media) return res.json({ error: 'пустой пост' });
+    const post = { 
+      id: 'p' + Date.now(), 
+      username, 
+      text: text || '', 
+      media: media || null, 
+      media_type: mediaType || null,
+      timestamp: Date.now() 
+    };
+    await supabase.from('posts').insert(post);
+    res.json({ success: true, post });
+  } catch (e) { 
+    console.error('Post error:', e);
+    res.json({ error: 'ошибка: ' + e.message }); 
+  }
 });
 
 app.post('/api/posts', async (req, res) => {
