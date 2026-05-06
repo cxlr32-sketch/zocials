@@ -18,7 +18,7 @@
         
         .login-screen { position:fixed; inset:0; background:var(--bg); z-index:500; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; max-width:430px; margin:0 auto; }
         .login-screen.hidden { display:none; }
-        .login-logo-img { width:80px; height:80px; border-radius:20px; margin-bottom:16px; object-fit:cover; }
+        .login-logo-img { width:120px; height:120px; border-radius:25px; margin-bottom:16px; object-fit:cover; }
         .login-version { font-size:0.8rem; color:var(--text-secondary); margin-bottom:20px; }
         .login-tabs { display:flex; width:100%; background:var(--surface2); border-radius:25px; padding:4px; margin-bottom:20px; position:relative; }
         .login-tab-slider { position:absolute; top:4px; left:4px; height:calc(100% - 8px); width:calc(50% - 4px); background:var(--primary); border-radius:22px; transition:transform 0.35s; z-index:1; }
@@ -35,8 +35,8 @@
         .main-app { display:none; width:100%; height:100%; flex-direction:column; }
         .main-app.visible { display:flex; }
         .header { display:flex; align-items:center; justify-content:space-between; padding:10px 20px; background:var(--surface); border-bottom:1px solid var(--border); z-index:100; }
-        .header-left { display:flex; align-items:center; gap:8px; }
-        .header-logo-img { width:32px; height:32px; border-radius:8px; object-fit:cover; }
+        .header-left { display:flex; align-items:center; gap:10px; }
+        .header-logo-img { width:42px; height:42px; border-radius:10px; object-fit:cover; }
         .logo-version { font-size:0.65rem; color:var(--text-secondary); margin-left:4px; }
         .icon-btn { width:38px; height:38px; border-radius:50%; background:var(--surface2); border:1px solid var(--border); color:var(--primary-light); font-size:1.2rem; display:flex; align-items:center; justify-content:center; cursor:pointer; }
         
@@ -60,7 +60,6 @@
         .post-action.liked { color:var(--accent); }
         .delete-btn { position:absolute; top:8px; right:8px; background:none; border:none; color:var(--text-secondary); cursor:pointer; z-index:1; font-size:1.1rem; }
         .edit-btn { position:absolute; top:8px; right:36px; background:none; border:none; color:var(--text-secondary); cursor:pointer; z-index:1; font-size:0.9rem; }
-        .verify-btn { position:absolute; top:8px; right:64px; background:none; border:none; color:var(--gold); cursor:pointer; z-index:1; font-size:0.8rem; display:none; }
         .attach-btn { display:flex; align-items:center; gap:6px; padding:8px 16px; border-radius:20px; background:var(--surface2); border:1px solid var(--border); color:var(--primary-light); cursor:pointer; margin:8px 0; font-size:0.9rem; }
         .image-preview { width:100%; max-height:200px; object-fit:contain; border-radius:14px; margin:8px 0; display:none; }
         .verified-badge { display:inline-block; width:16px; height:16px; background:var(--primary); border-radius:50%; font-size:0.6rem; color:white; text-align:center; line-height:16px; margin-left:2px; flex-shrink:0; }
@@ -191,7 +190,7 @@
                 <div class="page" id="profilePage"><div id="profileContent"></div></div>
                 <div class="page" id="contactPage"><div id="contactContent"></div></div>
                 <div class="page" id="settingsPage"><div id="settingsContent"></div></div>
-                <div class="page" id="aboutPage"><div style="text-align:center;padding:40px 20px;"><img src="https://imgfy.ru/ib/JGoGzQlCDIcONHE_1778078416.webp" style="width:80px;height:80px;border-radius:20px;margin-bottom:16px;" alt="Zocial"><p style="color:var(--text-secondary);">версия 0.1 (beta)</p><p style="margin-top:20px;color:var(--text-secondary);">социальная сеть с банком, чатами и видео</p><p style="margin-top:8px;color:var(--primary-light);">© 2025 zima.dev</p><button class="btn btn-outline" id="aboutBackBtn" style="margin-top:24px;">← назад</button></div></div>
+                <div class="page" id="aboutPage"><div style="text-align:center;padding:40px 20px;"><img src="https://imgfy.ru/ib/JGoGzQlCDIcONHE_1778078416.webp" style="width:120px;height:120px;border-radius:25px;margin-bottom:16px;" alt="Zocial"><p style="color:var(--text-secondary);">версия 0.1 (beta)</p><p style="margin-top:20px;color:var(--text-secondary);">социальная сеть с банком, чатами и видео</p><p style="margin-top:8px;color:var(--primary-light);">© 2025 zima.dev</p><button class="btn btn-outline" id="aboutBackBtn" style="margin-top:24px;">← назад</button></div></div>
             </div>
         </div>
         <button class="fab hidden" id="fabCreatePost">＋</button>
@@ -311,8 +310,13 @@ async function register() {
     showWelcome(() => { $('mainApp').classList.add('visible'); switchPage('feed'); loadFeed(); loadChats(); });
 }
 
-// ПОИСК
-$('searchBtn').addEventListener('click', () => { $('searchPanel').classList.add('open'); $('searchInput').value = ''; $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">введите запрос</div>'; setTimeout(() => $('searchInput').focus(), 300); });
+// ПОИСК (ИСПРАВЛЕНО)
+$('searchBtn').addEventListener('click', () => { 
+    $('searchPanel').classList.add('open'); 
+    $('searchInput').value = ''; 
+    $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">введите запрос</div>'; 
+    setTimeout(() => $('searchInput').focus(), 300); 
+});
 $('closeSearchPanel').addEventListener('click', () => $('searchPanel').classList.remove('open'));
 let searchTimeout;
 $('searchInput').addEventListener('input', () => {
@@ -322,15 +326,41 @@ $('searchInput').addEventListener('input', () => {
     searchTimeout = setTimeout(async () => {
         $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;">поиск...</div>';
         const results = await req('GET', '/users/search?q=' + encodeURIComponent(q));
-        if (!results || !Array.isArray(results) || results.length === 0) { $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">ничего не найдено</div>'; return; }
-        $('searchResults').innerHTML = results.map(u => `<div class="search-result-item" data-u="${u.username}"><div class="post-avatar" style="width:44px;height:44px;font-size:0.9rem;">${u.avatar ? `<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : (u.name||u.username)[0].toUpperCase()}</div><div style="flex:1;"><div style="font-weight:600;">${esc(u.name)}${isVerified(u.username)?' <span class="verified-badge">✓</span>':''}</div><div style="color:var(--primary-light);font-size:0.85rem;">@${esc(u.username)}</div></div></div>`).join('');
-        $('searchResults').querySelectorAll('.search-result-item').forEach(el => el.addEventListener('click', () => { $('searchPanel').classList.remove('open'); openContact(el.dataset.u); }));
+        if (!results || !Array.isArray(results) || results.length === 0) { 
+            $('searchResults').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">ничего не найдено</div>'; 
+            return; 
+        }
+        $('searchResults').innerHTML = results.map(u => `
+            <div class="search-result-item" data-u="${u.username}">
+                <div class="post-avatar" style="width:44px;height:44px;font-size:0.9rem;">${u.avatar ? `<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : (u.name||u.username)[0].toUpperCase()}</div>
+                <div style="flex:1;">
+                    <div style="font-weight:600;">${esc(u.name)}${isVerified(u.username)?' <span class="verified-badge">✓</span>':''}</div>
+                    <div style="color:var(--primary-light);font-size:0.85rem;">@${esc(u.username)}</div>
+                </div>
+            </div>
+        `).join('');
+        $('searchResults').querySelectorAll('.search-result-item').forEach(el => el.addEventListener('click', () => { 
+            $('searchPanel').classList.remove('open'); 
+            openContact(el.dataset.u); 
+        }));
     }, 300);
 });
 
-// ЛЕНТА
-async function loadFeed() { $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;">загрузка...</div>'; const posts = await req('GET', '/posts'); allPostsCache = Array.isArray(posts) ? posts : []; await initApp(); renderFeedFromCache(); }
-function renderFeedFromCache() { $('feedPosts').innerHTML = ''; if (!allPostsCache.length) { $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">пока нет постов</div>'; return; } allPostsCache.forEach(post => renderPost(post, $('feedPosts'))); }
+// ЛЕНТА (ПОСТЫ БОЛЬШЕ НЕ УДАЛЯЮТ АККАУНТЫ)
+async function loadFeed() { 
+    $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;">загрузка...</div>'; 
+    const posts = await req('GET', '/posts'); 
+    allPostsCache = Array.isArray(posts) ? posts : []; 
+    renderFeedFromCache(); 
+}
+function renderFeedFromCache() { 
+    $('feedPosts').innerHTML = ''; 
+    if (!allPostsCache.length) { 
+        $('feedPosts').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">пока нет постов</div>'; 
+        return; 
+    } 
+    allPostsCache.forEach(post => renderPost(post, $('feedPosts'))); 
+}
 function renderPost(post, container, showDelete = false) {
     const card = document.createElement('div'); card.className = 'post-card';
     const liked = post.likedBy?.includes(currentUser?.username);
@@ -368,7 +398,7 @@ async function openComments(postId) { activeCommentsPostId = postId; const post 
 $('closeComments').addEventListener('click', () => $('commentsModal').classList.remove('open'));
 $('commentSend').addEventListener('click', async () => { const text = $('commentInput').value.trim(); if (!text || !activeCommentsPostId) return; await req('POST', `/posts/${activeCommentsPostId}/comment`, { username: currentUser.username, text }); $('commentInput').value = ''; openComments(activeCommentsPostId); loadFeed(); });
 
-// ПОСТЫ
+// ПОСТЫ (БОЛЬШЕ НЕ УДАЛЯЮТ АККАУНТЫ)
 $('fabCreatePost').addEventListener('click', () => { $('postTextInput').value = ''; $('createPostTitle').textContent = '📝 новый пост'; $('publishPostBtn').textContent = 'опубликовать'; editingPostId = null; $('postImagePreview').style.display = 'none'; tempPostMedia = null; tempPostMediaType = null; $('createPostModal').classList.add('open'); });
 $('cancelPostBtn').addEventListener('click', () => { $('createPostModal').classList.remove('open'); editingPostId = null; });
 $('publishPostBtn').addEventListener('click', async () => {
@@ -440,7 +470,7 @@ $('loginSubmitBtn').addEventListener('click', login);
 $('regSubmitBtn').addEventListener('click', register);
 $('addContactBtn').addEventListener('click', () => { $('searchPanel').classList.add('open'); $('searchInput').value = ''; setTimeout(() => $('searchInput').focus(), 300); });
 
-// АВТОВХОД
+// АВТОВХОД (СЕССИЯ НЕ СЛЕТАЕТ)
 (async () => {
     if (localStorage.getItem('zc_theme') === 'light') document.body.classList.add('theme-light');
     await initApp();
