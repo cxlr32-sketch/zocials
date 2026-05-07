@@ -142,13 +142,7 @@
 
 <div class="main-app" id="mainApp">
     <div class="app">
-        <div class="header">
-            <div class="header-left">
-                <img src="https://imgfy.ru/ib/JGoGzQlCDIcONHE_1778078416.webp" class="header-logo-img" alt="Zocial">
-                <span class="logo-version">0.2 beta</span>
-            </div>
-            <div class="header-actions"><button class="icon-btn" id="searchBtn">🔍</button></div>
-        </div>
+        <div class="header"><div class="header-left"><img src="https://imgfy.ru/ib/JGoGzQlCDIcONHE_1778078416.webp" class="header-logo-img" alt="Zocial"><span class="logo-version">0.2 beta</span></div><div class="header-actions"><button class="icon-btn" id="searchBtn">🔍</button></div></div>
         <div class="main-content">
             <div class="pages-container" id="pagesContainer">
                 <div class="page" id="feedPage"><div id="feedPosts"></div></div>
@@ -162,15 +156,8 @@
             </div>
         </div>
         <button class="fab hidden" id="fabCreatePost">＋</button>
-        <div class="search-panel" id="searchPanel">
-            <div class="search-panel-header"><button class="back-btn" id="closeSearchPanel">←</button><input type="text" class="modal-input" id="searchInput" placeholder="поиск..." style="flex:1;margin:0;"></div>
-            <div class="search-panel-body" id="searchResults"></div>
-        </div>
-        <div class="chat-screen" id="chatScreen">
-            <div class="chat-nav"><button class="back-btn" id="closeChatBtn">←</button><span id="chatScreenName" style="font-weight:600;color:var(--primary-light);">чат</span></div>
-            <div class="chat-messages" id="chatMessages"></div>
-            <div class="chat-input-bar"><input type="text" class="chat-input" id="chatInput" placeholder="сообщение..."><button class="send-btn" id="chatSendBtn">➤</button></div>
-        </div>
+        <div class="search-panel" id="searchPanel"><div class="search-panel-header"><button class="back-btn" id="closeSearchPanel">←</button><input type="text" class="modal-input" id="searchInput" placeholder="поиск..." style="flex:1;margin:0;"></div><div class="search-panel-body" id="searchResults"></div></div>
+        <div class="chat-screen" id="chatScreen"><div class="chat-nav"><button class="back-btn" id="closeChatBtn">←</button><span id="chatScreenName" style="font-weight:600;color:var(--primary-light);">чат</span></div><div class="chat-messages" id="chatMessages"></div><div class="chat-input-bar"><input type="text" class="chat-input" id="chatInput" placeholder="сообщение..."><button class="send-btn" id="chatSendBtn">➤</button></div></div>
         <div class="bottom-nav">
             <button class="nav-item active" data-page="feed"><span class="nav-icon">🏠</span> лента</button>
             <button class="nav-item" data-page="bank"><span class="nav-icon">🏦</span> банк</button>
@@ -181,19 +168,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="createPostModal">
-    <div class="modal-sheet">
-        <h3 style="color:var(--primary-light);">📝 новый пост</h3>
-        <textarea class="modal-input" id="postTextInput" rows="3" placeholder="что у вас нового?"></textarea>
-        <input type="file" id="postImageInput" accept="image/*" style="display:none;">
-        <button class="attach-btn" id="attachImageBtn">🖼️ прикрепить фото</button>
-        <img id="postImagePreview" class="image-preview" alt="превью">
-        <div style="display:flex;gap:10px;margin-top:12px;">
-            <button class="btn btn-outline" id="cancelPostBtn">отмена</button>
-            <button class="btn btn-primary" id="publishPostBtn">опубликовать</button>
-        </div>
-    </div>
-</div>
+<div class="modal-overlay" id="createPostModal"><div class="modal-sheet"><h3 style="color:var(--primary-light);">📝 новый пост</h3><textarea class="modal-input" id="postTextInput" rows="3" placeholder="что у вас нового?"></textarea><input type="file" id="postImageInput" accept="image/*" style="display:none;"><button class="attach-btn" id="attachImageBtn">🖼️ прикрепить фото</button><img id="postImagePreview" class="image-preview" alt="превью"><div style="display:flex;gap:10px;margin-top:12px;"><button class="btn btn-outline" id="cancelPostBtn">отмена</button><button class="btn btn-primary" id="publishPostBtn">опубликовать</button></div></div></div>
 <div class="modal-overlay" id="commentsModal"><div class="modal-sheet"><h3 style="color:var(--primary-light);">💬 комментарии</h3><div id="commentsList"></div><div style="display:flex;gap:8px;margin-top:12px;"><input class="modal-input" id="commentInput" placeholder="комментарий..." style="margin:0;flex:1;"><button class="btn btn-primary" id="commentSend">→</button></div><button class="btn btn-outline" id="closeComments" style="width:100%;margin-top:12px;">закрыть</button></div></div>
 <div class="modal-overlay" id="bankTransferModal"><div class="modal-sheet" style="background:linear-gradient(135deg,#1e3a5f,#162d4a);border:2px solid #3b82f6;"><h3 style="color:var(--gold);text-align:center;">💸 перевод</h3><input class="modal-input" id="transferUsername" placeholder="никнейм" style="background:rgba(255,255,255,0.1);color:white;border-color:#3b82f6;"><input class="modal-input" type="number" id="transferAmount" placeholder="сумма" style="background:rgba(255,255,255,0.1);color:white;border-color:#3b82f6;"><div id="transferSuccess" style="text-align:center;color:var(--green);font-weight:700;margin-top:8px;display:none;">✅ успешно!</div><div style="display:flex;gap:10px;margin-top:12px;"><button class="btn btn-outline" id="cancelTransferBtn" style="color:white;border-color:white;">отмена</button><button class="btn btn-primary" id="confirmTransferBtn" style="background:var(--gold);color:#1e3a5f;">отправить</button></div></div></div>
 <div class="modal-overlay" id="editProfileModal"><div class="modal-sheet"><h3 style="color:var(--primary-light);">✏️ редактировать профиль</h3><div style="text-align:center;margin:12px 0;"><div class="profile-avatar" id="editAvatarPreview" style="margin:0 auto;width:80px;height:80px;font-size:2rem;"></div><input type="file" id="avatarInput" accept="image/*" style="display:none;"><button class="btn btn-outline" id="changeAvatarBtn" style="margin-top:8px;">📷 сменить аватар</button></div><input class="modal-input" id="editNameInput" placeholder="имя"><input class="modal-input" id="editBioInput" placeholder="о себе"><div style="display:flex;gap:10px;margin-top:12px;"><button class="btn btn-outline" id="cancelEditBtn">отмена</button><button class="btn btn-primary" id="saveEditBtn">сохранить</button></div></div></div>
@@ -208,11 +183,11 @@ async function apiReq(method, endpoint, body = null) {
 
 let currentUser = null, globalChats = {}, activeChatId = null, activeCommentsPostId = null, currentPage = 'feed';
 let allPostsCache = [], tempPostMedia = null, tempPostMediaType = null;
-let verifiedList = ['snzhk'], allUsersCache = [];
+let allUsersCache = [];
 
 function esc(t) { return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[c]); }
 function animateLike(x, y) { const el = document.createElement('div'); el.className = 'like-animation'; el.textContent = '❤️'; el.style.left = x + 'px'; el.style.top = y + 'px'; document.body.appendChild(el); setTimeout(() => el.remove(), 800); }
-function isVerified(username) { return verifiedList.includes(username); }
+function isVerified(username) { return username === 'snzhk'; }
 
 function switchPage(page) {
     currentPage = page;
@@ -230,7 +205,7 @@ function switchPage(page) {
 }
 document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => switchPage(n.dataset.page)));
 
-async function initApp() { const v = await apiReq('GET', '/verified'); if (Array.isArray(v)) verifiedList = v; const users = await apiReq('GET', '/users'); if (Array.isArray(users)) allUsersCache = users; }
+async function initApp() { const users = await apiReq('GET', '/users'); if (Array.isArray(users)) allUsersCache = users; }
 function showApp() { $('loginScreen').classList.add('hidden'); $('mainApp').classList.add('visible'); switchPage('feed'); loadFeed(); loadChats(); }
 
 async function login() {
@@ -268,7 +243,7 @@ function renderPost(post, container, showDelete = false) {
     const verified = isVerified(post.username);
     const isOwner = post.username === currentUser?.username;
     card.innerHTML = `${isOwner && showDelete ? `<button style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--text-secondary);cursor:pointer;z-index:1;" data-pid="${post.id}">✕</button>` : ''}
-        <div class="post-header"><div class="post-avatar">${(post.username||'?')[0].toUpperCase()}</div><div class="post-user-info" data-un="${post.username}"><div class="post-username">@${esc(post.username)}${verified ? '<span class="verified-badge">✓</span>' : ''}</div><div class="post-time">${post.time||''}</div></div></div>
+        <div class="post-header"><div class="post-avatar">${(post.username||'?')[0].toUpperCase()}</div><div class="post-user-info"><div class="post-username">@${esc(post.username)}${verified ? '<span class="verified-badge">✓</span>' : ''}</div><div class="post-time">${post.time||''}</div></div></div>
         <div class="post-text">${esc(post.text||'')}</div>
         ${post.media_type === 'image' && post.media ? `<img src="${post.media}" class="post-media">` : ''}
         <div class="post-actions"><button class="post-action like-btn ${liked?'liked':''}" data-pid="${post.id}">${liked?'❤️':'🤍'} ${post.likes||0}</button><button class="post-action cmt-btn" data-pid="${post.id}">💬 ${(post.comments||[]).length}</button></div>`;
@@ -283,7 +258,7 @@ async function openComments(postId) { activeCommentsPostId = postId; const post 
 $('closeComments').addEventListener('click', () => $('commentsModal').classList.remove('open'));
 $('commentSend').addEventListener('click', async () => { const t = $('commentInput').value.trim(); if (!t || !activeCommentsPostId) return; await apiReq('POST', `/posts/${activeCommentsPostId}/comment`, { username: currentUser.username, text: t }); $('commentInput').value = ''; openComments(activeCommentsPostId); loadFeed(); });
 
-// ПОСТЫ И ФОТО
+// ПОСТЫ
 $('fabCreatePost').addEventListener('click', () => { $('postTextInput').value = ''; tempPostMedia = null; tempPostMediaType = null; $('postImagePreview').style.display = 'none'; $('createPostModal').classList.add('open'); });
 $('cancelPostBtn').addEventListener('click', () => $('createPostModal').classList.remove('open'));
 $('publishPostBtn').addEventListener('click', async () => {
@@ -333,9 +308,7 @@ async function loadProfile() {
     $('profileEditBtn').addEventListener('click', () => { $('editNameInput').value = currentUser.name; $('editBioInput').value = currentUser.bio || ''; renderAvatar($('editAvatarPreview'), currentUser); $('editProfileModal').classList.add('open'); });
     $('profileSettingsBtn').addEventListener('click', () => switchPage('settings'));
 }
-
 function renderAvatar(container, user) { if (!container) return; container.innerHTML = ''; if (user?.avatar) { const img = document.createElement('img'); img.src = user.avatar; img.style.cssText = 'width:100%;height:100%;object-fit:cover;'; container.appendChild(img); } else { container.textContent = (user?.name || '?')[0].toUpperCase(); } }
-
 $('changeAvatarBtn').addEventListener('click', () => $('avatarInput').click());
 $('avatarInput').addEventListener('change', () => { const f = $('avatarInput').files[0]; if (!f) return; const r = new FileReader(); r.onload = e => { currentUser.avatar = e.target.result; renderAvatar($('editAvatarPreview'), currentUser); }; r.readAsDataURL(f); });
 $('saveEditBtn').addEventListener('click', async () => {
